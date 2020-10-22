@@ -379,6 +379,13 @@ struct program_parameters : MIGRAPHX_HANDLE_BASE(program_parameters)
 
     program_parameters() { this->make_handle(&migraphx_program_parameters_create); }
 
+    program_parameters(std::initializer_list<std::pair<std::string, argument>> l)
+    {
+        this->make_handle(&migraphx_program_parameters_create);
+        for(auto&& p : l)
+            this->add(p.first.c_str(), p.second);
+    }
+
     void add(const char* pname, const argument& pargument) const
     {
         call(&migraphx_program_parameters_add,
@@ -508,6 +515,25 @@ struct program : MIGRAPHX_HANDLE_BASE(program)
     }
 
     friend bool operator!=(const program& px, const program& py) { return !(px == py); }
+};
+
+struct operation : MIGRAPHX_HANDLE_BASE(operation)
+{
+    operation(migraphx_operation* p, own) { this->set_handle(p, own{}); }
+
+    operation(migraphx_operation* p, borrow) { this->set_handle(p, borrow{}); }
+
+    operation(const char* name, const char* attributes = nullptr)
+    {
+        this->make_handle(&migraphx_operation_create, name, attributes);
+    }
+
+    std::string name()
+    {
+        std::array<char, 1024> out_name;
+        call(&migraphx_operation_name, out_name.data(), 1024, this->get_handle_ptr());
+        return std::string(out_name.data());
+    }
 };
 
 inline program load(const char* filename, migraphx_file_options options)
