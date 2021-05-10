@@ -25,6 +25,7 @@ argument from_gpu(const argument& arg);
 void set_device(std::size_t id);
 
 void gpu_sync();
+void gpu_sync(const context& ctx);
 
 void gpu_copy(context& ctx, const argument& src, const argument& dst);
 void copy_to_gpu(context& ctx, const argument& src, const argument& dst);
@@ -66,12 +67,46 @@ struct hip_sync_device
     }
 
     std::string name() const { return "hip::sync_device"; }
-    shape compute_shape(const std::vector<shape>&) const { return {}; }
+    shape compute_shape(const std::vector<shape>& inputs) const
+    {
+        if(inputs.empty())
+            return {};
+        return inputs.front();
+    }
 
-    argument compute(context&, const shape&, const std::vector<argument>&) const
+    argument compute(context&, const shape&, const std::vector<argument>& args) const
     {
         gpu_sync();
-        return {};
+        if(args.empty())
+            return {};
+        return args.front();
+    }
+};
+
+struct hip_sync_stream
+{
+    std::string tag{};
+
+    template <class Self, class F>
+    static auto reflect(Self& self, F f)
+    {
+        return pack(f(self.tag, "tag"));
+    }
+
+    std::string name() const { return "hip::sync_stream"; }
+    shape compute_shape(const std::vector<shape>& inputs) const
+    {
+        if(inputs.empty())
+            return {};
+        return inputs.front();
+    }
+
+    argument compute(context& ctx, const shape&, const std::vector<argument>& args) const
+    {
+        gpu_sync(ctx);
+        if(args.empty())
+            return {};
+        return args.front();
     }
 };
 
@@ -119,7 +154,6 @@ struct hip_copy_from_gpu
             return result;
         }
         copy_from_gpu(ctx, args[0], args[1]);
-
         return args[1];
     }
     std::ptrdiff_t output_alias(const std::vector<shape>& args) const
@@ -135,7 +169,7 @@ struct hip_copy
     std::string name() const { return "hip::copy"; }
     shape compute_shape(std::vector<shape> inputs) const
     {
-        check_shapes{inputs, *this}.has(2).standard();
+        check_shapes{inputs, *this}.has(2);
         return inputs.at(1);
     }
     argument compute(context& ctx, const shape&, std::vector<argument> args) const

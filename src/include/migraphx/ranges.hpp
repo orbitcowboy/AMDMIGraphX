@@ -5,6 +5,9 @@
 #include <vector>
 #include <initializer_list>
 #include <migraphx/rank.hpp>
+#include <migraphx/type_name.hpp>
+#include <migraphx/errors.hpp>
+#include <migraphx/requires.hpp>
 #include <migraphx/config.hpp>
 
 namespace migraphx {
@@ -34,6 +37,33 @@ auto generic_find_impl(rank<0>, C&& c, const T& x)
     return std::find(c.begin(), c.end(), x);
 }
 
+template <class C, class T>
+auto generic_find_at_impl(rank<1>, C&& c, const T& x) -> decltype(c.find(x))
+{
+    return c.find(x);
+}
+
+template <class C, class T>
+auto generic_find_at_impl(rank<0>, C&& c, const T& x)
+{
+    auto n = std::distance(c.begin(), c.end());
+    if(x >= n)
+        return c.end();
+    return std::next(c.begin(), x);
+}
+
+template <class C, class T, class = typename C::mapped_type>
+decltype(auto) generic_at_impl(rank<1>, const C&, T&& it)
+{
+    return it->second;
+}
+
+template <class C, class T>
+decltype(auto) generic_at_impl(rank<0>, const C&, T&& it)
+{
+    return *it;
+}
+
 struct empty
 {
 };
@@ -44,6 +74,20 @@ template <class C, class T>
 auto generic_find(C&& c, const T& x)
 {
     return detail::generic_find_impl(rank<2>{}, c, x);
+}
+
+template <class C, class T>
+decltype(auto) at(C&& c, const T& x, const std::string& msg = "")
+{
+    auto it = detail::generic_find_at_impl(rank<2>{}, c, x);
+    if(it == c.end())
+    {
+        if(msg.empty())
+            MIGRAPHX_THROW("At operator out of range for " + get_type_name(c));
+        else
+            MIGRAPHX_THROW(msg);
+    }
+    return detail::generic_at_impl(rank<2>{}, c, it);
 }
 
 template <class C, class T>
@@ -124,10 +168,22 @@ void copy(Range&& r, Iterator it)
     std::copy(r.begin(), r.end(), it);
 }
 
+template <class Range>
+auto reverse(Range& r)
+{
+    return range(std::make_reverse_iterator(r.end()), std::make_reverse_iterator(r.begin()));
+}
+
 template <class Range, class T>
 void replace(Range&& r, const T& old, const T& new_x)
 {
     std::replace(r.begin(), r.end(), old, new_x);
+}
+
+template <class R1, class R2>
+bool equal(R1&& r1, R2&& r2)
+{
+    return std::equal(r1.begin(), r1.end(), r2.begin(), r2.end());
 }
 
 template <class R>

@@ -44,7 +44,7 @@ struct mean
     template <class T>
     MIGRAPHX_DEVICE_CONSTEXPR auto operator()(T x) const
     {
-        return static_cast<T>(x / item_num);
+        return x / static_cast<T>(item_num);
     }
 };
 
@@ -53,7 +53,7 @@ struct max
     template <class T, class U>
     MIGRAPHX_DEVICE_CONSTEXPR auto operator()(T x, U y) const
     {
-        return x > y ? x : y;
+        return (x > y) ? x : y;
     }
 };
 
@@ -62,7 +62,7 @@ struct min
     template <class T, class U>
     MIGRAPHX_DEVICE_CONSTEXPR auto operator()(T x, U y) const
     {
-        return x < y ? x : y;
+        return (x < y) ? x : y;
     }
 };
 

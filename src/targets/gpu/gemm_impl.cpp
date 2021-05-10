@@ -16,6 +16,7 @@ rocblas_datatype get_type(shape::type_t type)
     case shape::uint8_type: return rocblas_datatype_u8_r;
     case shape::int32_type: return rocblas_datatype_i32_r;
     case shape::uint32_type: return rocblas_datatype_u32_r;
+    case shape::tuple_type:
     case shape::bool_type:
     case shape::uint16_type:
     case shape::int16_type:
@@ -108,7 +109,11 @@ void gemm_impl(
                            compute_type,
                            rocblas_gemm_algo_standard,
                            0,
+#if ROCBLAS_VERSION_MAJOR >= 2 && ROCBLAS_VERSION_MINOR >= 38
+                           rocblas_gemm_flags_pack_int8x4);
+#else
                            0);
+#endif
         }
         else
         {
@@ -141,7 +146,11 @@ void gemm_impl(
                            compute_type,
                            rocblas_gemm_algo_standard,
                            0,
+#if ROCBLAS_VERSION_MAJOR >= 2 && ROCBLAS_VERSION_MINOR >= 38
+                           rocblas_gemm_flags_pack_int8x4);
+#else
                            0);
+#endif
         }
     });
 }

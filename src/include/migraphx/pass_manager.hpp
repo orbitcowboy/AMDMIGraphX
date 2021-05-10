@@ -17,6 +17,7 @@
 namespace migraphx {
 inline namespace MIGRAPHX_INLINE_NS {
 
+void run_passes(module& mod, const std::vector<pass>& passes, tracer trace = tracer{});
 void run_passes(program& prog, const std::vector<pass>& passes, tracer trace = tracer{});
 
 } // namespace MIGRAPHX_INLINE_NS

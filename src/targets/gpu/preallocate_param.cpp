@@ -10,16 +10,16 @@ namespace migraphx {
 inline namespace MIGRAPHX_INLINE_NS {
 namespace gpu {
 
-void preallocate_param::apply(program& p) const
+void preallocate_param::apply(module& p) const
 {
     for(auto ins : iterator_for(p))
     {
         if(ins->name() != "@param")
             continue;
-        std::string id = any_cast<builtin::param>(ins->get_operator()).parameter;
-        if(id != param)
+        if(param != any_cast<builtin::param>(ins->get_operator()).parameter)
             continue;
-        auto r = p.insert_instruction(ins, hip_allocate_memory{ins->get_shape(), id});
+        std::string id = p.name() + ":" + param;
+        auto r         = p.insert_instruction(ins, hip_allocate_memory{ins->get_shape(), id});
         p.replace_instruction(ins, r);
     }
 }

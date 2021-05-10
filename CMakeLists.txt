@@ -19,11 +19,24 @@ endif()
 
 project(migraphx)
 find_package(ROCM REQUIRED)
+
+find_path(HALF_INCLUDE_DIR half.hpp PATH_SUFFIXES half)
+if (NOT HALF_INCLUDE_DIR)
+    message(FATAL_ERROR "Could not find half.hpp - Please check that the install path of half.hpp has been added to CMAKE_PREFIX_PATH")
+endif()
+
+include(CheckTypeSize)
+set(CMAKE_REQUIRED_INCLUDES ${HALF_INCLUDE_DIR})
+set(CMAKE_EXTRA_INCLUDE_FILES half.hpp)
+check_type_size("half_float::detail::expr" HALF_EXPR LANGUAGE CXX)
+set(CMAKE_REQUIRED_INCLUDES)
+set(CMAKE_EXTRA_INCLUDE_FILES)
+
 find_package(nlohmann_json 3.8.0 REQUIRED)
 
 include(ROCMSetupVersion)
 
-rocm_setup_version(VERSION 0.8.1)
+rocm_setup_version(VERSION 1.1)
 set(MIGRAPHX_SO_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR})
 
 option( BUILD_SHARED_LIBS "Build as a shared library" ON )
@@ -43,7 +56,15 @@ else()
     set(MIGRAPHX_ENABLE_GPU Off CACHE BOOL "")
 endif()
 
-add_compile_options(-std=c++14)
+# Disable cpu backend by default
+set(MIGRAPHX_ENABLE_CPU Off CACHE BOOL "")
+
+set(CMAKE_CXX_STANDARD_DEFAULT "")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-std=c++17)
+else()
+    add_compile_options(-std=c++14)
+endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(EnableCompilerWarnings)
@@ -71,9 +92,11 @@ rocm_enable_clang_tidy(
         performance-*
         readability-*
         -bugprone-signed-char-misuse
+        -bugprone-macro-parentheses
         # Disable the aliased reserved identifiers
         -cert-dcl37-c
         -cert-dcl51-cpp
+        -cert-str34-c
         # Disable all alpha checks by default
         -clang-analyzer-alpha*
         # Enable some alpha checks
@@ -118,6 +141,7 @@ rocm_enable_clang_tidy(
         -readability-braces-around-statements
         -readability-convert-member-functions-to-static
         -readability-else-after-return
+        -readability-function-cognitive-complexity
         -readability-named-parameter
         -readability-redundant-string-init
         -readability-uppercase-literal-suffix
@@ -159,12 +183,16 @@ rocm_enable_cppcheck(
         passedByValue
         unusedStructMember
         functionStatic
-        functionConst:*program.*
+        functionConst
         shadowFunction
         shadowVar
         shadowVariable
         unsafeClassDivZero
         definePrefix:*test/include/test.hpp
+        useSmartPointer:*src/api/api.cpp
+        useSmartPointer:*make_shared_array.hpp
+        constParameter:*src/targets/gpu/*.cpp
+        constParameter:*src/targets/gpu/*.hpp
     FORCE
     INCONCLUSIVE
     RULE_FILE
@@ -175,7 +203,9 @@ rocm_enable_cppcheck(
     INCLUDE
         ${CMAKE_CURRENT_SOURCE_DIR}/src/include
         ${CMAKE_CURRENT_SOURCE_DIR}/src/targets/cpu/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/targets/miopen/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/targets/gpu/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/targets/gpu/device/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/targets/gpu/kernels/include
         ${CMAKE_CURRENT_SOURCE_DIR}/test/include
     DEFINE
         CPPCHECK=1

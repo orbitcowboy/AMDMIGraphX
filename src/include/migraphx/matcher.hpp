@@ -4,6 +4,7 @@
 #include <migraphx/functional.hpp>
 #include <migraphx/ranges.hpp>
 #include <migraphx/instruction.hpp>
+#include <migraphx/module.hpp>
 #include <migraphx/program.hpp>
 #include <migraphx/iterator_for.hpp>
 #include <migraphx/type_name.hpp>
@@ -28,6 +29,12 @@ struct matcher_context
         return m.match(*this, ins) != this->not_found();
     }
 
+    template <class M>
+    auto lazy_match(M m, instruction_ref ins)
+    {
+        return [=] { return this->matched(m, ins); };
+    }
+
     private:
     instruction_ref last;
 };
@@ -38,7 +45,7 @@ struct predicate_matcher
 {
     P p;
 
-    instruction_ref match(matcher_context& ctx, instruction_ref ins) const
+    instruction_ref match(const matcher_context& ctx, instruction_ref ins) const
     {
         assert(ins != ctx.not_found());
         if(p(ins))
@@ -176,6 +183,17 @@ basic_matcher<predicate_matcher<P>> make_basic_pred_matcher(P p)
     return {{p}};
 }
 
+/// Create a typed-erased matcher
+using any_matcher_base = basic_matcher<
+    function_matcher<std::function<instruction_ref(matcher_context&, instruction_ref)>>>;
+struct any_matcher : any_matcher_base
+{
+    template <class M>
+    any_matcher(M mm) : any_matcher_base({[=](auto& ctx, auto ins) { return mm.match(ctx, ins); }})
+    {
+    }
+};
+
 /// This macro takes care of the boilerplate for defining a matcher
 #define MIGRAPHX_BASIC_MATCHER(name, ...)                                     \
     struct name##_m                                                           \
@@ -203,7 +221,7 @@ struct matcher_result
 
 /// Match a single instruction
 template <class M>
-matcher_result match_instruction(program& p, instruction_ref ins, M&& m)
+matcher_result match_instruction(module& p, instruction_ref ins, M&& m)
 {
     assert(ins != p.end());
     matcher_result result;
@@ -217,7 +235,7 @@ MIGRAPHX_DECLARE_ENV_VAR(MIGRAPHX_TRACE_MATCHES)
 
 /// Find matches for an instruction in the program
 template <class... Ms>
-void find_matches(program& p, instruction_ref ins, Ms&&... ms)
+void find_matches(module& p, instruction_ref ins, Ms&&... ms)
 {
 #if !defined(__GNUC__) || defined(__clang__) || __GNUC__ > 5
     const
@@ -244,12 +262,28 @@ void find_matches(program& p, instruction_ref ins, Ms&&... ms)
 
 /// Find matches in a program
 template <class... Ms>
-void find_matches(program& p, Ms&&... ms)
+void find_matches(module& p, Ms&&... ms)
 {
     for(auto ins : iterator_for(p))
     {
         find_matches(p, ins, ms...);
     }
+}
+
+template <class M, class F>
+struct find_generic_match
+{
+    M m;
+    F f;
+    M matcher() const { return m; }
+
+    void apply(module& mod, const matcher_result& mr) const { f(mod, mr); }
+};
+
+template <class M, class F>
+find_generic_match<M, F> make_match_finder(M m, F f)
+{
+    return {m, f};
 }
 
 template <class M>
@@ -258,7 +292,7 @@ struct find_skip
     M m;
     M matcher() const { return m; }
 
-    void apply(program&, const matcher_result&) const {}
+    void apply(module&, const matcher_result&) const {}
 };
 
 template <class M>
@@ -270,18 +304,18 @@ find_skip<M> make_find_skip(M m)
 struct lazy_and
 {
     template <class F, class G>
-    bool operator()(F f, G g) const
+    auto operator()(F f, G g) const
     {
-        return f() and g();
+        return [=] { return f() and g(); };
     }
 };
 
 struct lazy_or
 {
     template <class F, class G>
-    bool operator()(F f, G g) const
+    auto operator()(F f, G g) const
     {
-        return f() or g();
+        return [=] { return f() or g(); };
     }
 };
 
@@ -293,7 +327,7 @@ struct match_fold_f
     {
         Op op;
         auto matched = [&](auto m) { return [=, &ctx] { return ctx.matched(m, ins); }; };
-        return fold([&](auto x, auto y) { return op(always(x), matched(y)); })(Start, ms...);
+        return fold(op)(always(Start), matched(ms)...)();
     }
 
     template <class Pack>
@@ -324,7 +358,7 @@ struct match_fold_f
                 bool matches = Start;
                 select(start, [&](auto ins) {
                     auto fm = [&] { return match_fold_f::fold_matchers_pack(ctx, ins, mpack); };
-                    matches = op(always(matches), fm);
+                    matches = op(always(matches), fm)();
                 });
                 if(matches == Matches)
                     return start;
@@ -447,6 +481,22 @@ MIGRAPHX_BASIC_MATCHER(is_unused, const matcher_context& ctx, instruction_ref in
 }
 
 template <class... Ms>
+auto skip(Ms... ms)
+{
+    auto m = any_of(ms...);
+    return make_basic_fun_matcher([=](matcher_context& ctx, instruction_ref start) {
+        return fix<instruction_ref>([&](auto self, auto ins) {
+            if(ins->inputs().size() == 1 and ctx.matched(m, ins))
+            {
+                auto next = ins->inputs().front();
+                return self(next);
+            }
+            return ins;
+        })(start);
+    });
+}
+
+template <class... Ms>
 auto skip_output(Ms... ms)
 {
     auto m = any_of(ms...);
@@ -472,6 +522,12 @@ inline auto name(std::string s)
 {
     return make_basic_pred_matcher(
         [ =, s = std::move(s) ](instruction_ref ins) { return ins->name() == s; });
+}
+
+inline auto name_contains(const std::string& name)
+{
+    return make_basic_pred_matcher(
+        [=](instruction_ref ins) { return contains(ins->get_operator().name(), name); });
 }
 
 inline auto name(std::unordered_set<std::string> names)
@@ -535,6 +591,68 @@ inline auto any_arg(std::size_t i, std::size_t j)
     return [=](auto m) { return match::any_of(arg(i)(m), arg(j)(m)); };
 }
 
+template <std::size_t N, class M>
+std::size_t tree_leafs_impl(matcher_context& ctx,
+                            std::array<instruction_ref, N>& leafs,
+                            M m,
+                            instruction_ref ins)
+{
+    std::size_t idx = 0;
+    fix([&](auto self, auto i) {
+        if(idx == leafs.size())
+            return;
+        if(ctx.matched(m, i) and i->inputs().size() >= 2)
+        {
+            self(i->inputs()[0]);
+            self(i->inputs()[1]);
+            return;
+        }
+        leafs[idx] = i;
+        idx++;
+    })(ins);
+    return idx;
+}
+
+template <class M, class... Ms>
+auto tree(M main_op, Ms... ms)
+{
+    return make_basic_fun_matcher([=](matcher_context& ctx, instruction_ref ins) {
+        // Flatten leaf nodes
+        std::array<instruction_ref, sizeof...(Ms)> leafs;
+        std::size_t idx = tree_leafs_impl(ctx, leafs, main_op, ins);
+        if(idx != leafs.size())
+            return ctx.not_found();
+        // Use explicit captures to workaround ICE on gcc
+        bool found = sequence_c<sizeof...(Ms)>([&ms..., &ctx, &leafs](auto... is) {
+            return fold(lazy_and{})(ctx.lazy_match(ms, leafs[is])...)();
+        });
+        if(not found)
+            return ctx.not_found();
+        return ins;
+    });
+}
+
+template <class M, class... Ms>
+auto unordered_tree(M main_op, Ms... ms)
+{
+    return make_basic_fun_matcher([=](matcher_context& ctx, instruction_ref ins) {
+        // Flatten leaf nodes
+        std::array<instruction_ref, sizeof...(Ms)> leafs;
+        std::size_t idx = tree_leafs_impl(ctx, leafs, main_op, ins);
+        if(idx != leafs.size())
+            return ctx.not_found();
+        // Use explicit captures to workaround ICE on gcc
+        bool found = sequence_c<sizeof...(Ms)>([ms..., &ctx, &leafs](auto... is) {
+            return by(fold(lazy_and{}), [is..., &ctx, &leafs](auto m) {
+                return fold(lazy_or{})(ctx.lazy_match(m, leafs[is])...);
+            })(ms...)();
+        });
+        if(not found)
+            return ctx.not_found();
+        return ins;
+    });
+}
+
 template <class M>
 auto same_shape(M m)
 {
@@ -552,10 +670,16 @@ auto same_shape(Ms... ms)
     return all_of(same_shape(ms)...);
 }
 
+template <class... Ms>
+auto skip_broadcasts(Ms... ms)
+{
+    return skip(name("broadcast", "multibroadcast", "contiguous"))(ms...);
+}
+
 template <class T>
 inline auto has_value(T x, float tolerance = 1e-6)
 {
-    return make_basic_pred_matcher([=](instruction_ref ins) {
+    return skip_broadcasts(make_basic_pred_matcher([=](instruction_ref ins) {
         if(ins->name() != "@literal")
             return false;
         auto l = ins->get_literal();
@@ -563,17 +687,25 @@ inline auto has_value(T x, float tolerance = 1e-6)
             return false;
         bool b = false;
         l.visit([&](auto v) {
-            if(std::all_of(v.begin(), v.end(), [&](auto val) { return val - x < tolerance; }))
+            if(std::all_of(
+                   v.begin(), v.end(), [&](auto val) { return std::fabs(val - x) < tolerance; }))
                 b = true;
         });
         return b;
-    });
+    }));
 }
 
 inline auto has_attribute(const std::string& name)
 {
     return make_basic_pred_matcher(
         [=](instruction_ref ins) { return ins->get_operator().attributes().contains(name); });
+}
+
+template <class... Ms>
+auto pointwise(Ms... ms)
+{
+    return match::has_attribute("pointwise")(match::any_of(match::nargs(1), match::nargs(2)),
+                                             ms...);
 }
 
 } // namespace match

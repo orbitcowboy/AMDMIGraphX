@@ -2,6 +2,8 @@
 #define MIGRAPHX_GUARD_OPERATORS_LOGSOFTMAX_HPP
 
 #include <migraphx/check_shapes.hpp>
+#include <migraphx/value.hpp>
+#include <migraphx/op/normalize_attribute.hpp>
 #include <migraphx/config.hpp>
 
 namespace migraphx {
@@ -18,17 +20,25 @@ struct logsoftmax
         return pack(f(self.axis, "axis"));
     }
 
-    std::string name() const { return "logsoftmax"; }
-    shape compute_shape(std::vector<shape> inputs) const
+    value attributes() const
     {
-        check_shapes{inputs, *this}.has(1).standard();
-        int64_t n_dim = static_cast<int64_t>(inputs[0].lens().size());
-        if(axis < -n_dim || axis >= n_dim)
+        value normalize;
+        normalize["axis"] = value::array{normalize_attribute::include_min};
+        return {{"normalize_axes", normalize}};
+    }
+
+    std::string name() const { return "logsoftmax"; }
+    shape normalize_compute_shape(std::vector<shape> inputs) const
+    {
+        if(inputs.at(0).packed())
         {
-            MIGRAPHX_THROW("LogSoftMax: input axis value " + std::to_string(axis) +
-                           " is out of range");
+            return inputs.at(0);
         }
-        return inputs.at(0);
+        else
+        {
+            auto lens = inputs.at(0).lens();
+            return {inputs.at(0).type(), lens};
+        }
     }
 
     auto output() const

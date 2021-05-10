@@ -34,19 +34,30 @@ typedef enum {
 } migraphx_status;
 
 #define MIGRAPHX_SHAPE_GENERATE_ENUM_TYPES(x, t) migraphx_shape_##x,
+/// An enum to represent the different data type inputs
 typedef enum {
+    migraphx_shape_tuple_type,
     MIGRAPHX_SHAPE_VISIT_TYPES(MIGRAPHX_SHAPE_GENERATE_ENUM_TYPES)
 } migraphx_shape_datatype_t;
 #undef MIGRAPHX_SHAPE_GENERATE_ENUM_TYPES
 
+/// Options to be passed when compiling
 typedef struct
 {
+    /// For targets with offloaded memory(such as the gpu), this will insert
+    /// instructions during compilation to copy the input parameters to the
+    /// offloaded memory and to copy the final result from the offloaded
+    /// memory back to main memory.
     bool offload_copy;
+    /// Optimize math functions to use faster approximate versions. There may
+    /// be slight accuracy degredation when enabled.
     bool fast_math;
 } migraphx_compile_options;
 
+/// Options for saving and loading files
 typedef struct
 {
+    /// Format to be used for file. It can either be json or msgpack
     const char* format;
 } migraphx_file_options;
 
@@ -71,6 +82,9 @@ typedef const struct migraphx_arguments* const_migraphx_arguments_t;
 typedef struct migraphx_shapes* migraphx_shapes_t;
 typedef const struct migraphx_shapes* const_migraphx_shapes_t;
 
+typedef struct migraphx_module* migraphx_module_t;
+typedef const struct migraphx_module* const_migraphx_module_t;
+
 typedef struct migraphx_program* migraphx_program_t;
 typedef const struct migraphx_program* const_migraphx_program_t;
 
@@ -79,6 +93,9 @@ typedef const struct migraphx_operation* const_migraphx_operation_t;
 
 typedef struct migraphx_onnx_options* migraphx_onnx_options_t;
 typedef const struct migraphx_onnx_options* const_migraphx_onnx_options_t;
+
+typedef struct migraphx_tf_options* migraphx_tf_options_t;
+typedef const struct migraphx_tf_options* const_migraphx_tf_options_t;
 
 typedef struct migraphx_quantize_op_names* migraphx_quantize_op_names_t;
 typedef const struct migraphx_quantize_op_names* const_migraphx_quantize_op_names_t;
@@ -174,7 +191,12 @@ migraphx_status migraphx_shapes_size(size_t* out, migraphx_shapes_t shapes);
 migraphx_status
 migraphx_shapes_get(const_migraphx_shape_t* out, migraphx_shapes_t shapes, size_t idx);
 
+migraphx_status migraphx_module_print(const_migraphx_module_t module);
+
 migraphx_status migraphx_program_destroy(migraphx_program_t program);
+
+migraphx_status migraphx_program_get_main_module(migraphx_module_t* out,
+                                                 migraphx_program_t program);
 
 migraphx_status migraphx_program_compile(migraphx_program_t program,
                                          migraphx_target_t target,
@@ -228,6 +250,27 @@ migraphx_status migraphx_parse_onnx_buffer(migraphx_program_t* out,
                                            const void* data,
                                            size_t size,
                                            migraphx_onnx_options_t options);
+
+migraphx_status migraphx_tf_options_destroy(migraphx_tf_options_t tf_options);
+
+migraphx_status migraphx_tf_options_create(migraphx_tf_options_t* tf_options);
+
+migraphx_status migraphx_tf_options_set_nhwc(migraphx_tf_options_t tf_options, bool is_nhwc);
+
+migraphx_status migraphx_tf_options_set_input_parameter_shape(migraphx_tf_options_t tf_options,
+                                                              const char* name,
+                                                              size_t* dims,
+                                                              size_t dims_size);
+
+migraphx_status migraphx_tf_options_set_default_dim_value(migraphx_tf_options_t tf_options,
+                                                          size_t value);
+
+migraphx_status migraphx_tf_options_set_output_names(migraphx_tf_options_t tf_options,
+                                                     const char** names,
+                                                     size_t names_size);
+
+migraphx_status
+migraphx_parse_tf(migraphx_program_t* out, const char* name, migraphx_tf_options_t options);
 
 migraphx_status migraphx_quantize_op_names_destroy(migraphx_quantize_op_names_t quantize_op_names);
 

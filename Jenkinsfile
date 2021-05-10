@@ -7,7 +7,10 @@ def rocmtestnode(Map conf) {
     def docker_args = conf.get("docker_args", "")
     def docker_build_args = conf.get("docker_build_args", "")
     def pre = conf.get("pre", {})
+    def ccache = "/var/jenkins/.cache/ccache"
     def image = 'migraphxlib'
+    env.CCACHE_COMPRESSLEVEL = 7
+    env.CCACHE_DIR = ccache
     def cmake_build = { compiler, flags ->
         def cmd = """
             env
@@ -15,12 +18,12 @@ def rocmtestnode(Map conf) {
             rm -rf build
             mkdir build
             cd build
-            CXX=${compiler} CXXFLAGS='-Werror -Wno-fallback' cmake ${flags} .. 
-            CTEST_PARALLEL_LEVEL=32 make -j\$(nproc) generate all doc package check
+            CXX=${compiler} CXXFLAGS='-Werror -Wno-fallback' cmake -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache ${flags} .. 
+            CTEST_PARALLEL_LEVEL=32 make -j\$(nproc) generate all doc package check VERBOSE=1
         """
         echo cmd
         sh cmd
-        if (compiler == "hcc") {
+        if (compiler != "hcc") {
             // Only archive from master or develop
             if (env.BRANCH_NAME == "develop" || env.BRANCH_NAME == "master") {
                 archiveArtifacts artifacts: "build/*.deb", allowEmptyArchive: true, fingerprint: true
@@ -32,7 +35,7 @@ def rocmtestnode(Map conf) {
             stage("checkout ${variant}") {
                 checkout scm
             }
-            gitStatusWrapper(credentialsId: 'github-app-rocm-mici', gitHubContext: "Jenkins - ${variant}", account: 'ROCmSoftwarePlatform', repo: 'AMDMIGraphX') {
+            gitStatusWrapper(credentialsId: '7126e5fe-eb51-4576-b52b-9aaf1de8f0fd', gitHubContext: "Jenkins - ${variant}", account: 'ROCmSoftwarePlatform', repo: 'AMDMIGraphX') {
                 pre()
                 stage("image ${variant}") {
                     try {
@@ -42,8 +45,8 @@ def rocmtestnode(Map conf) {
 
                     }
                 }
-                withDockerContainer(image: image, args: "--device=/dev/kfd --device=/dev/dri --group-add video --cap-add SYS_PTRACE ${docker_args}") {
-                    timeout(time: 1, unit: 'HOURS') {
+                withDockerContainer(image: image, args: "--device=/dev/kfd --device=/dev/dri --group-add video --cap-add SYS_PTRACE -v=/var/jenkins/:/var/jenkins ${docker_args}") {
+                    timeout(time: 2, unit: 'HOURS') {
                         body(cmake_build)
                     }
                 }
@@ -64,13 +67,12 @@ def rocmtest(m) {
 }
 
 def rocmnodename(name) {
-    def node_name = 'rocmtest || rocm'
-    if(name == 'fiji') {
-        node_name = 'rocmtest && fiji';
-    } else if(name == 'vega') {
-        node_name = 'rocmtest && vega';
-    } else {
-        node_name = name
+    def rocmtest_name = "(rocmtest || migraphx)"
+    def node_name = "${rocmtest_name}"
+    if(name == "fiji") {
+        node_name = "${rocmtest_name} && fiji";
+    } else if(name == "vega") {
+        node_name = "${rocmtest_name} && vega";
     }
     return node_name
 }
@@ -81,98 +83,22 @@ def rocmnode(name, body) {
     }
 }
 
-def rocmhipclangnode(name, body) {
-    return { label ->
-        rocmtestnode(variant: label, node: rocmnodename(name), docker_build_args: '-f hip-clang.docker', body: body)
-    }
-}
-
-// Static checks
-rocmtest tidy: rocmnode('rocmtest') { cmake_build ->
-    stage('Clang Tidy') {
-        sh '''
-            rm -rf build
-            mkdir build
-            cd build
-            CXX=hcc cmake .. 
-            make -j$(nproc) -k analyze
-        '''
-    }
-}, format: rocmnode('rocmtest') { cmake_build ->
-    stage('Format') {
-        sh '''
-            find . -iname \'*.h\' \
-                -o -iname \'*.hpp\' \
-                -o -iname \'*.cpp\' \
-                -o -iname \'*.h.in\' \
-                -o -iname \'*.hpp.in\' \
-                -o -iname \'*.cpp.in\' \
-                -o -iname \'*.cl\' \
-            | grep -v 'build/' \
-            | xargs -n 1 -P 1 -I{} -t sh -c \'clang-format-5.0 -style=file {} | diff - {}\'
-            find . -iname \'*.py\' \
-            | grep -v 'build/'  \
-            | xargs -n 1 -P 1 -I{} -t sh -c \'yapf {} | diff - {}\'
-        '''
-    }
-}, clang_debug: rocmnode('vega') { cmake_build ->
-    stage('Clang Debug') {
-        // TODO: Enable integer
+rocmtest clang_debug: rocmnode('vega') { cmake_build ->
+    stage('Hip Clang Debug') {
         def sanitizers = "undefined"
-        def debug_flags = "-O2 -fsanitize=${sanitizers} -fno-sanitize-recover=${sanitizers}"
-        cmake_build("hcc", "-DCMAKE_BUILD_TYPE=debug -DMIGRAPHX_ENABLE_PYTHON=Off -DCMAKE_CXX_FLAGS_DEBUG='${debug_flags}'")
+        def debug_flags = "-g -O2 -fsanitize=${sanitizers} -fno-sanitize-recover=${sanitizers}"
+        cmake_build("/opt/rocm/llvm/bin/clang++", "-DCMAKE_BUILD_TYPE=debug -DMIGRAPHX_ENABLE_PYTHON=Off -DCMAKE_CXX_FLAGS_DEBUG='${debug_flags}'")
     }
 }, clang_release: rocmnode('vega') { cmake_build ->
-    stage('Clang Release') {
-        cmake_build("hcc", "-DCMAKE_BUILD_TYPE=release")
-        stash includes: 'build/*.deb', name: 'migraphx-package'
-    }
-}, clang_release_py3: rocmnode('vega') { cmake_build ->
-    stage('Clang Release Python 3') {
-        cmake_build("hcc", "-DCMAKE_BUILD_TYPE=release -DPYTHON_EXECUTABLE=/usr/local/bin/python3")
-    }
-}, hip_clang_release: rocmhipclangnode('vega') { cmake_build ->
     stage('Hip Clang Release') {
         cmake_build("/opt/rocm/llvm/bin/clang++", "-DCMAKE_BUILD_TYPE=release")
-        // stash includes: 'build/*.deb', name: 'migraphx-package'
+        stash includes: 'build/*.deb', name: 'migraphx-package'
     }
-}, hip_clang_tidy: rocmhipclangnode('rocmtest') { cmake_build ->
-    stage('Hip Clang Tidy') {
-        sh '''
-            rm -rf build
-            mkdir build
-            cd build
-            CXX=/opt/rocm/llvm/bin/clang++ cmake .. 
-            make -j$(nproc) -k analyze
-        '''
-    }
-}, gcc5: rocmnode('rocmtest') { cmake_build ->
-    stage('GCC 5 Debug') {
-        cmake_build("g++-5", "-DCMAKE_BUILD_TYPE=debug")
-    }
-    stage('GCC 5 Release') {
-        cmake_build("g++-5", "-DCMAKE_BUILD_TYPE=release")
-    }
-}, gcc7: rocmnode('rocmtest') { cmake_build ->
-    stage('GCC 7 Debug') {
-        def linker_flags = '-fuse-ld=gold'
-        def cmake_linker_flags = "-DCMAKE_EXE_LINKER_FLAGS='${linker_flags}' -DCMAKE_SHARED_LINKER_FLAGS='${linker_flags}'"
-        // TODO: Add bounds-strict
-        def sanitizers = "undefined,address"
-        def debug_flags = "-g -fprofile-arcs -ftest-coverage -fno-omit-frame-pointer -fsanitize-address-use-after-scope -fsanitize=${sanitizers} -fno-sanitize-recover=${sanitizers}"
-        cmake_build("g++-7", "-DCMAKE_BUILD_TYPE=debug -DMIGRAPHX_ENABLE_PYTHON=Off ${cmake_linker_flags} -DCMAKE_CXX_FLAGS_DEBUG='${debug_flags}'")
-
-    }
-    stage('Codecov') {
-        env.CODECOV_TOKEN="8545af1c-f90b-4345-92a5-0d075503ca56"
-        sh '''
-            cd build
-            lcov --directory . --capture --output-file $(pwd)/coverage.info
-            lcov --remove $(pwd)/coverage.info '/usr/*' --output-file $(pwd)/coverage.info
-            lcov --list $(pwd)/coverage.info
-            curl -s https://codecov.io/bash | bash
-            echo "Uploaded"
-        '''
+}, mlir_debug: rocmnode('vega') { cmake_build ->
+    stage('MLIR Debug') {
+        def sanitizers = "undefined"
+        def debug_flags = "-g -O2 -fsanitize=${sanitizers} -fno-sanitize-recover=${sanitizers}"
+        cmake_build("/opt/rocm/llvm/bin/clang++", "-DCMAKE_BUILD_TYPE=debug -DMIGRAPHX_ENABLE_PYTHON=Off -DMIGRAPHX_ENABLE_MLIR=On -DCMAKE_CXX_FLAGS_DEBUG='${debug_flags}'")
     }
 }
 

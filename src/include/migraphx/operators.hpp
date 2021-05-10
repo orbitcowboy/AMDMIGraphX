@@ -38,11 +38,15 @@
 #include <migraphx/op/greater.hpp>
 #include <migraphx/op/gru.hpp>
 #include <migraphx/op/identity.hpp>
+#include <migraphx/op/if_op.hpp>
 #include <migraphx/op/im2col.hpp>
 #include <migraphx/op/leaky_relu.hpp>
 #include <migraphx/op/less.hpp>
 #include <migraphx/op/load.hpp>
 #include <migraphx/op/log.hpp>
+#include <migraphx/op/logical_and.hpp>
+#include <migraphx/op/logical_or.hpp>
+#include <migraphx/op/logical_xor.hpp>
 #include <migraphx/op/logsoftmax.hpp>
 #include <migraphx/op/lrn.hpp>
 #include <migraphx/op/lstm.hpp>
@@ -54,10 +58,11 @@
 #include <migraphx/op/outline.hpp>
 #include <migraphx/op/pad.hpp>
 #include <migraphx/op/pooling.hpp>
+#include <migraphx/op/pow.hpp>
+#include <migraphx/op/prefix_scan_sum.hpp>
 #include <migraphx/op/prelu.hpp>
 #include <migraphx/op/quant_convolution.hpp>
 #include <migraphx/op/quant_dot.hpp>
-#include <migraphx/op/pow.hpp>
 #include <migraphx/op/recip.hpp>
 #include <migraphx/op/reduce_max.hpp>
 #include <migraphx/op/reduce_mean.hpp>
@@ -88,6 +93,7 @@
 #include <migraphx/op/tan.hpp>
 #include <migraphx/op/transpose.hpp>
 #include <migraphx/op/unary.hpp>
+#include <migraphx/op/unary_not.hpp>
 #include <migraphx/op/undefined.hpp>
 #include <migraphx/op/unknown.hpp>
 #include <migraphx/op/unsqueeze.hpp>

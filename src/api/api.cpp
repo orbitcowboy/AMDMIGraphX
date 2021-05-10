@@ -3,10 +3,11 @@
 #include <migraphx/shape.hpp>
 #include <migraphx/program.hpp>
 #include <migraphx/onnx.hpp>
+#include <migraphx/tf.hpp>
 #include <migraphx/register_target.hpp>
 #include <migraphx/generate.hpp>
 #include <migraphx/quantization.hpp>
-#include <migraphx/cpu/target.hpp>
+#include <migraphx/ref/target.hpp>
 #include <migraphx/load_save.hpp>
 #include <migraphx/make_op.hpp>
 #include <migraphx/json.hpp>
@@ -48,6 +49,7 @@ shape::type_t to_shape_type(migraphx_shape_datatype_t t)
 {
     switch(t)
     {
+    case migraphx_shape_tuple_type: return shape::tuple_type;
 #define MIGRAPHX_DETAIL_SHAPE_CASE_CONVERT(x, y) \
     case migraphx_shape_##x: return shape::x;
         MIGRAPHX_SHAPE_VISIT_TYPES(MIGRAPHX_DETAIL_SHAPE_CASE_CONVERT)
@@ -60,6 +62,7 @@ migraphx_shape_datatype_t to_shape_type(shape::type_t t)
 {
     switch(t)
     {
+    case shape::tuple_type: return migraphx_shape_tuple_type;
 #define MIGRAPHX_DETAIL_SHAPE_CASE_CONVERT(x, y) \
     case shape::x: return migraphx_shape_##x;
         MIGRAPHX_SHAPE_VISIT_TYPES(MIGRAPHX_DETAIL_SHAPE_CASE_CONVERT)
@@ -90,11 +93,25 @@ void set_default_dim_value(onnx_options& options, size_t value)
     options.default_dim_value = value;
 }
 
+void set_nhwc(tf_options& options, bool is_nhwc) { options.is_nhwc = is_nhwc; }
+
+void set_default_dim_value(tf_options& options, size_t value) { options.batch_size = value; }
+
 void set_input_parameter_shape(onnx_options& options,
                                const char* name,
                                std::vector<std::size_t> dims)
 {
     options.map_input_dims[std::string(name)] = std::move(dims);
+}
+
+void set_input_parameter_shape(tf_options& options, const char* name, std::vector<std::size_t> dims)
+{
+    options.map_input_dims[std::string(name)] = std::move(dims);
+}
+
+void set_output_names(tf_options& options, std::vector<const char*> names)
+{
+    options.output_node_names = std::vector<std::string>(names.begin(), names.end());
 }
 
 template <class Value>
@@ -118,8 +135,8 @@ void quantize_fp16_with_op_names(program& prog, std::vector<std::string>& names)
 
 struct quantize_int8_options
 {
-    std::vector<program::parameter_map> calibration = {};
-    std::vector<std::string> op_names               = {};
+    std::vector<parameter_map> calibration = {};
+    std::vector<std::string> op_names      = {};
 };
 
 void add_op_name(quantize_int8_options& options, const char* name)
@@ -127,7 +144,7 @@ void add_op_name(quantize_int8_options& options, const char* name)
     options.op_names.push_back(name);
 }
 
-void add_calibration_data(quantize_int8_options& options, program::parameter_map& data)
+void add_calibration_data(quantize_int8_options& options, parameter_map& data)
 {
     options.calibration.push_back(data);
 }
@@ -160,14 +177,13 @@ bool equal(const T& x, const T& y)
     return x == y;
 }
 
-std::vector<argument> run(program& p, const program::parameter_map& params)
-{
-    return p.eval(params);
-}
+std::vector<argument> run(program& p, const parameter_map& params) { return p.eval(params); }
 
 std::vector<shape> get_output_shapes(program& p) { return p.get_output_shapes(); }
 
-void print(const program& p) { std::cout << p << std::endl; }
+void print_program(const program& p) { std::cout << p << std::endl; }
+
+void print_module(const module& m) { std::cout << m << std::endl; }
 
 } // namespace migraphx
 
@@ -264,6 +280,16 @@ struct migraphx_shapes
     std::vector<migraphx::shape> object;
 };
 
+extern "C" struct migraphx_module;
+struct migraphx_module
+{
+    template <class... Ts>
+    migraphx_module(Ts&&... xs) : object(std::forward<Ts>(xs)...)
+    {
+    }
+    migraphx::module object;
+};
+
 extern "C" struct migraphx_program;
 struct migraphx_program
 {
@@ -292,6 +318,16 @@ struct migraphx_onnx_options
     {
     }
     migraphx::onnx_options object;
+};
+
+extern "C" struct migraphx_tf_options;
+struct migraphx_tf_options
+{
+    template <class... Ts>
+    migraphx_tf_options(Ts&&... xs) : object(std::forward<Ts>(xs)...)
+    {
+    }
+    migraphx::tf_options object;
 };
 
 extern "C" struct migraphx_quantize_op_names;
@@ -616,9 +652,28 @@ migraphx_shapes_get(const_migraphx_shape_t* out, migraphx_shapes_t shapes, size_
     });
 }
 
+extern "C" migraphx_status migraphx_module_print(const_migraphx_module_t module)
+{
+    return migraphx::try_([&] {
+        if(module == nullptr)
+            MIGRAPHX_THROW(migraphx_status_bad_param, "Bad parameter module: Null pointer");
+        migraphx::print_module((module->object));
+    });
+}
+
 extern "C" migraphx_status migraphx_program_destroy(migraphx_program_t program)
 {
     return migraphx::try_([&] { destroy((program)); });
+}
+
+extern "C" migraphx_status migraphx_program_get_main_module(migraphx_module_t* out,
+                                                            migraphx_program_t program)
+{
+    return migraphx::try_([&] {
+        if(program == nullptr)
+            MIGRAPHX_THROW(migraphx_status_bad_param, "Bad parameter program: Null pointer");
+        *out = object_cast<migraphx_module_t>((program->object).get_main_module());
+    });
 }
 
 extern "C" migraphx_status migraphx_program_compile(migraphx_program_t program,
@@ -664,7 +719,7 @@ extern "C" migraphx_status migraphx_program_print(const_migraphx_program_t progr
     return migraphx::try_([&] {
         if(program == nullptr)
             MIGRAPHX_THROW(migraphx_status_bad_param, "Bad parameter program: Null pointer");
-        migraphx::print((program->object));
+        migraphx::print_program((program->object));
     });
 }
 
@@ -808,6 +863,75 @@ extern "C" migraphx_status migraphx_parse_onnx_buffer(migraphx_program_t* out,
             MIGRAPHX_THROW(migraphx_status_bad_param, "Bad parameter options: Null pointer");
         *out = allocate<migraphx_program_t>(
             migraphx::parse_onnx_buffer((data), (size), (options->object)));
+    });
+}
+
+extern "C" migraphx_status migraphx_tf_options_destroy(migraphx_tf_options_t tf_options)
+{
+    return migraphx::try_([&] { destroy((tf_options)); });
+}
+
+extern "C" migraphx_status migraphx_tf_options_create(migraphx_tf_options_t* tf_options)
+{
+    return migraphx::try_([&] {
+        *tf_options = object_cast<migraphx_tf_options_t>(allocate<migraphx::tf_options>());
+    });
+}
+
+extern "C" migraphx_status migraphx_tf_options_set_nhwc(migraphx_tf_options_t tf_options,
+                                                        bool is_nhwc)
+{
+    return migraphx::try_([&] {
+        if(tf_options == nullptr)
+            MIGRAPHX_THROW(migraphx_status_bad_param, "Bad parameter tf_options: Null pointer");
+        migraphx::set_nhwc((tf_options->object), (is_nhwc));
+    });
+}
+
+extern "C" migraphx_status migraphx_tf_options_set_input_parameter_shape(
+    migraphx_tf_options_t tf_options, const char* name, size_t* dims, size_t dims_size)
+{
+    return migraphx::try_([&] {
+        if(tf_options == nullptr)
+            MIGRAPHX_THROW(migraphx_status_bad_param, "Bad parameter tf_options: Null pointer");
+        if(dims == nullptr and dims_size != 0)
+            MIGRAPHX_THROW(migraphx_status_bad_param, "Bad parameter dims: Null pointer");
+        migraphx::set_input_parameter_shape(
+            (tf_options->object), (name), (std::vector<size_t>(dims, dims + dims_size)));
+    });
+}
+
+extern "C" migraphx_status
+migraphx_tf_options_set_default_dim_value(migraphx_tf_options_t tf_options, size_t value)
+{
+    return migraphx::try_([&] {
+        if(tf_options == nullptr)
+            MIGRAPHX_THROW(migraphx_status_bad_param, "Bad parameter tf_options: Null pointer");
+        migraphx::set_default_dim_value((tf_options->object), (value));
+    });
+}
+
+extern "C" migraphx_status migraphx_tf_options_set_output_names(migraphx_tf_options_t tf_options,
+                                                                const char** names,
+                                                                size_t names_size)
+{
+    return migraphx::try_([&] {
+        if(tf_options == nullptr)
+            MIGRAPHX_THROW(migraphx_status_bad_param, "Bad parameter tf_options: Null pointer");
+        if(names == nullptr and names_size != 0)
+            MIGRAPHX_THROW(migraphx_status_bad_param, "Bad parameter names: Null pointer");
+        migraphx::set_output_names((tf_options->object),
+                                   (std::vector<const char*>(names, names + names_size)));
+    });
+}
+
+extern "C" migraphx_status
+migraphx_parse_tf(migraphx_program_t* out, const char* name, migraphx_tf_options_t options)
+{
+    return migraphx::try_([&] {
+        if(options == nullptr)
+            MIGRAPHX_THROW(migraphx_status_bad_param, "Bad parameter options: Null pointer");
+        *out = allocate<migraphx_program_t>(migraphx::parse_tf((name), (options->object)));
     });
 }
 

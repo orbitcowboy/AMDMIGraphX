@@ -6,6 +6,7 @@
 #include <migraphx/check_shapes.hpp>
 #include <migraphx/stringutils.hpp>
 #include <migraphx/streamutils.hpp>
+#include <migraphx/functional.hpp>
 #include <migraphx/literal.hpp>
 #include <migraphx/shape_for_each.hpp>
 #include <migraphx/int_divide.hpp>
@@ -50,10 +51,8 @@ struct pooling
         check_shapes{inputs, *this}.has(1);
 
         const shape& input = inputs.at(0);
-        auto t             = input.type();
-
-        auto input_lens = input.lens();
-        size_t kdims    = input_lens.size() - 2;
+        auto input_lens    = input.lens();
+        size_t kdims       = input_lens.size() - 2;
         if(kdims != this->kdims())
         {
             MIGRAPHX_THROW("pooling: input k-dims does not match attribute size");
@@ -70,7 +69,7 @@ struct pooling
 
             output_lens.push_back(std::size_t(std::max<std::ptrdiff_t>(1, len + 1)));
         }
-        return {t, output_lens};
+        return inputs[0].with_lens(output_lens);
     }
 
     size_t kdims() const

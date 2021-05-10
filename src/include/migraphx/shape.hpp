@@ -40,7 +40,7 @@ struct shape
 #define MIGRAPHX_SHAPE_GENERATE_ENUM_TYPES(x, t) x,
     enum type_t
     {
-        MIGRAPHX_SHAPE_VISIT_TYPES(MIGRAPHX_SHAPE_GENERATE_ENUM_TYPES)
+        MIGRAPHX_SHAPE_VISIT_TYPES(MIGRAPHX_SHAPE_GENERATE_ENUM_TYPES) tuple_type
     };
 #undef MIGRAPHX_SHAPE_GENERATE_ENUM_TYPES
 
@@ -58,6 +58,11 @@ struct shape
     struct get_type<const T> : get_type<T>
     {
     };
+
+    static const std::vector<type_t>& types();
+
+    static std::string name(type_t t);
+    static std::string cpp_type(type_t t);
 
     shape();
     shape(type_t t);
@@ -77,6 +82,10 @@ struct shape
     {
     }
 
+    shape(const std::vector<shape>& subs);
+
+    static shape
+    from_permutation(type_t t, const std::vector<std::size_t>& l, const std::vector<int64_t>& perm);
     type_t type() const;
     const std::vector<std::size_t>& lens() const;
     const std::vector<std::size_t>& strides() const;
@@ -102,6 +111,7 @@ struct shape
     std::size_t index(std::size_t i) const;
 
     std::vector<std::size_t> multi(std::size_t i) const;
+    void multi_copy(std::size_t i, std::size_t* start, const std::size_t* end) const;
 
     /// Returns true if the shape is packed with no padding
     bool packed() const;
@@ -118,6 +128,9 @@ struct shape
 
     shape normalize_standard() const;
 
+    shape with_lens(type_t t, const std::vector<std::size_t>& l) const;
+    shape with_lens(const std::vector<std::size_t>& l) const;
+
     friend bool operator==(const shape& x, const shape& y);
     friend bool operator!=(const shape& x, const shape& y);
     friend std::ostream& operator<<(std::ostream& os, const shape& x);
@@ -126,6 +139,10 @@ struct shape
     struct as
     {
         using type = std::conditional_t<std::is_same<T, bool>{}, int8_t, T>;
+
+        type max() const { return std::numeric_limits<type>::max(); }
+
+        type min() const { return std::numeric_limits<type>::lowest(); }
 
         template <class U>
         type operator()(U u) const
@@ -164,17 +181,34 @@ struct shape
         type_t type_enum() const { return get_type<type>{}; }
     };
 
-    template <class Visitor>
-    void visit_type(Visitor v) const
+    template <class Visitor, class TupleVisitor>
+    static void visit(type_t t, Visitor v, TupleVisitor tv)
     {
-        switch(this->type())
+        switch(t)
         {
+        case tuple_type:
+        {
+            tv();
+            return;
+        }
 #define MIGRAPHX_SHAPE_GENERATE_VISITOR_CASE(x, t) \
     case x: v(as<t>()); return;
             MIGRAPHX_SHAPE_VISIT_TYPES(MIGRAPHX_SHAPE_GENERATE_VISITOR_CASE)
 #undef MIGRAPHX_SHAPE_GENERATE_VISITOR_CASE
         }
         MIGRAPHX_THROW("Unknown type");
+    }
+
+    template <class Visitor>
+    static void visit(type_t t, Visitor v)
+    {
+        return visit(t, v, [] { MIGRAPHX_THROW("Tuple cannot be visited."); });
+    }
+
+    template <class... Visitors>
+    void visit_type(Visitors... vs) const
+    {
+        visit(this->type(), vs...);
     }
 
     template <class Visitor>
@@ -187,6 +221,8 @@ struct shape
 
     std::string type_string() const;
     static type_t parse_type(const std::string& s);
+
+    const std::vector<shape>& sub_shapes() const;
 
     private:
     std::shared_ptr<const shape_impl> impl;

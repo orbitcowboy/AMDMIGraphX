@@ -3,16 +3,17 @@
 
 #include <cassert>
 #include <string>
-#include <functional>
 #include <memory>
 #include <type_traits>
 #include <utility>
+#include <migraphx/functional.hpp>
 #include <migraphx/config.hpp>
 
 namespace migraphx {
 inline namespace MIGRAPHX_INLINE_NS {
 
 struct program;
+struct module;
 
 #ifdef DOXYGEN
 
@@ -22,6 +23,8 @@ struct pass
 {
     /// A unique name used to identify the pass
     std::string name() const;
+    /// Run the pass on the module
+    void apply(module& m) const;
     /// Run the pass on the program
     void apply(program& p) const;
 };
@@ -34,6 +37,7 @@ struct pass
  * struct pass
  * {
  *      std::string name() const;
+ *      void apply(module & m) const;
  *      void apply(program & p) const;
  * };
  *
@@ -108,6 +112,12 @@ struct pass
         return (*this).private_detail_te_get_handle().name();
     }
 
+    void apply(module& m) const
+    {
+        assert((*this).private_detail_te_handle_mem_var);
+        (*this).private_detail_te_get_handle().apply(m);
+    }
+
     void apply(program& p) const
     {
         assert((*this).private_detail_te_handle_mem_var);
@@ -128,8 +138,35 @@ struct pass
         virtual const std::type_info& type() const                                = 0;
 
         virtual std::string name() const     = 0;
+        virtual void apply(module& m) const  = 0;
         virtual void apply(program& p) const = 0;
     };
+
+    template <class T>
+    static auto private_detail_te_default_apply(char, T&& private_detail_te_self, module& m)
+        -> decltype(private_detail_te_self.apply(m))
+    {
+        private_detail_te_self.apply(m);
+    }
+
+    template <class T>
+    static void private_detail_te_default_apply(float, T&& private_detail_te_self, module& m)
+    {
+        migraphx::nop(private_detail_te_self, m);
+    }
+
+    template <class T>
+    static auto private_detail_te_default_apply(char, T&& private_detail_te_self, program& p)
+        -> decltype(private_detail_te_self.apply(p))
+    {
+        private_detail_te_self.apply(p);
+    }
+
+    template <class T>
+    static void private_detail_te_default_apply(float, T&& private_detail_te_self, program& p)
+    {
+        migraphx::nop(private_detail_te_self, p);
+    }
 
     template <typename PrivateDetailTypeErasedT>
     struct private_detail_te_handle_type : private_detail_te_handle_base_type
@@ -161,7 +198,17 @@ struct pass
 
         std::string name() const override { return private_detail_te_value.name(); }
 
-        void apply(program& p) const override { private_detail_te_value.apply(p); }
+        void apply(module& m) const override
+        {
+
+            private_detail_te_default_apply(char(0), private_detail_te_value, m);
+        }
+
+        void apply(program& p) const override
+        {
+
+            private_detail_te_default_apply(char(0), private_detail_te_value, p);
+        }
 
         PrivateDetailTypeErasedT private_detail_te_value;
     };
