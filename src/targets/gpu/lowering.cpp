@@ -420,8 +420,12 @@ struct miopen_apply
                 mod->insert_instruction(ins, make_op("hip::copy_from_gpu"), inputs.front());
             auto sync_cond = mod->insert_instruction(ins, make_op("hip::sync_stream"), cpu_cond);
             inputs.front() = sync_cond;
-
             std::vector<module_ref> mod_args = ins->module_inputs();
+            if (mod_args.empty())
+            {
+                return mod->replace_instruction(ins, ins->get_operator(), inputs);
+            }
+
             std::map<std::string, shape> name_shapes;
             for(const auto& smod : mod_args)
             {

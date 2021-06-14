@@ -110,32 +110,16 @@ void inline_module::apply(module& m) const
             auto out_num            = arg_outs.size() / 2;
             auto cond               = ins->inputs().front();
             const auto& ins_outputs = ins->outputs();
-            auto icond              = m.insert_instruction(
-                ins, make_op("convert", {{"target_type", shape::float_type}}), cond);
             for(std::size_t i = 0; i < out_num; ++i)
             {
                 auto l0 = m.add_literal(literal(arg_outs.at(i).get_shape(), arg_outs.at(i).data()));
                 auto l1 = m.add_literal(
                     literal(arg_outs.at(i + out_num).get_shape(), arg_outs.at(i + out_num).data()));
-                auto lens  = l0->get_shape().lens();
-                auto mcond = m.insert_instruction(
-                    ins, make_op("multibroadcast", {{"output_lens", lens}}), icond);
-                std::size_t elem_num = l0->get_shape().elements();
-                std::vector<float> vec_offset(elem_num, elem_num);
-                std::vector<float> vec_ind(elem_num);
-                shape sidx{shape::float_type, lens};
-                std::iota(vec_ind.begin(), vec_ind.end(), elem_num);
-                auto lidx    = m.add_literal(literal(sidx, vec_ind));
-                auto loffset = m.add_literal(literal(sidx, vec_offset));
-                auto moffset = m.insert_instruction(ins, make_op("mul"), mcond, loffset);
-                auto f_ind   = m.insert_instruction(ins, make_op("sub"), lidx, moffset);
-                auto ins_ind = m.insert_instruction(
-                    ins, make_op("convert", {{"target_type", shape::int32_type}}), f_ind);
-                auto l01 = m.insert_instruction(ins, make_op("concat", {{"axis", 0}}), l0, l1);
-                auto rl  = m.insert_instruction(
-                    ins, make_op("reshape", {{"dims", {l0->get_shape().elements() * 2}}}), l01);
-                auto r = m.insert_instruction(ins, make_op("gather", {{"axis", 0}}), rl, ins_ind);
+std::cout << "loc1" << std::endl;
+                auto r = m.insert_instruction(ins, make_op("if"), {cond, l0, l1}, {});
+std::cout << "loc2" << std::endl;
                 m.replace_instruction(ins_outputs.at(i), r);
+std::cout << "loc3" << std::endl;
             }
         }
         // cond is constant, inline the corresponding subgraph and discard the other one

@@ -22,7 +22,18 @@ struct if_op
     shape compute_shape(const std::vector<shape>& inputs, std::vector<module_ref> mods) const
     {
         check_shapes{inputs, *this}.standard();
-        if(mods.size() != 2)
+        
+        // empty mod inputs, return 
+        if (mods.empty())
+        {
+            if (inputs.at(0) != inputs.at(1))
+            {
+                MIGRAPHX_THROW("IF: if and then argument should have the same input shapes!");
+            }
+
+            return inputs.at(0);
+        }
+        else if(mods.size() != 2)
         {
             MIGRAPHX_THROW("IF: operator should have two submodules.");
         }
@@ -45,6 +56,11 @@ struct if_op
                          module_ref&, const std::unordered_map<std::string, argument>&)>& run) const
     {
         auto cond      = args.front().at<bool>();
+        if (mods.empty())
+        {
+            return cond ? args.at(0) : args.at(1);
+        }
+
         module_ref mod = cond ? mods[0] : mods[1];
         std::unordered_map<std::string, argument> params;
 
