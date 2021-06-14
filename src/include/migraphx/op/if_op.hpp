@@ -22,11 +22,11 @@ struct if_op
     shape compute_shape(const std::vector<shape>& inputs, std::vector<module_ref> mods) const
     {
         check_shapes{inputs, *this}.standard();
-        
-        // empty mod inputs, return 
-        if (mods.empty())
+
+        // empty mod inputs, return
+        if(mods.empty())
         {
-            if (inputs.at(0) != inputs.at(1))
+            if(inputs.at(0) != inputs.at(1))
             {
                 MIGRAPHX_THROW("IF: if and then argument should have the same input shapes!");
             }
@@ -55,8 +55,8 @@ struct if_op
                      const std::function<std::vector<argument>(
                          module_ref&, const std::unordered_map<std::string, argument>&)>& run) const
     {
-        auto cond      = args.front().at<bool>();
-        if (mods.empty())
+        auto cond = args.front().at<bool>();
+        if(mods.empty())
         {
             return cond ? args.at(0) : args.at(1);
         }

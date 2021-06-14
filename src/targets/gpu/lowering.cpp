@@ -421,7 +421,7 @@ struct miopen_apply
             auto sync_cond = mod->insert_instruction(ins, make_op("hip::sync_stream"), cpu_cond);
             inputs.front() = sync_cond;
             std::vector<module_ref> mod_args = ins->module_inputs();
-            if (mod_args.empty())
+            if(mod_args.empty())
             {
                 return mod->replace_instruction(ins, ins->get_operator(), inputs);
             }

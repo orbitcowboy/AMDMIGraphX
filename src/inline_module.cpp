@@ -115,11 +115,11 @@ void inline_module::apply(module& m) const
                 auto l0 = m.add_literal(literal(arg_outs.at(i).get_shape(), arg_outs.at(i).data()));
                 auto l1 = m.add_literal(
                     literal(arg_outs.at(i + out_num).get_shape(), arg_outs.at(i + out_num).data()));
-std::cout << "loc1" << std::endl;
+                std::cout << "loc1" << std::endl;
                 auto r = m.insert_instruction(ins, make_op("if"), {cond, l0, l1}, {});
-std::cout << "loc2" << std::endl;
+                std::cout << "loc2" << std::endl;
                 m.replace_instruction(ins_outputs.at(i), r);
-std::cout << "loc3" << std::endl;
+                std::cout << "loc3" << std::endl;
             }
         }
         // cond is constant, inline the corresponding subgraph and discard the other one
