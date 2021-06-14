@@ -109,16 +109,16 @@ TEST_CASE(inline_subgraph)
 
     auto create_inlined = [] {
         migraphx::shape s{migraphx::shape::float_type, {5}};
-        std::vector<float> data1      = {1, 2, 3, 4, 5};
-        std::vector<float> data2      = {5, 4, 3, 2, 1};
+        std::vector<float> data1 = {1, 2, 3, 4, 5};
+        std::vector<float> data2 = {5, 4, 3, 2, 1};
         migraphx::shape cond_s{migraphx::shape::bool_type};
 
         migraphx::program pi;
-        auto* mm   = pi.get_main_module();
-        auto cond  = mm->add_parameter("cond", cond_s);
-        auto l1    = mm->add_literal(migraphx::literal(s, data1));
-        auto l2    = mm->add_literal(migraphx::literal(s, data2));
-        auto r  = mm->add_instruction(migraphx::make_op("if"), cond, l1, l2);
+        auto* mm  = pi.get_main_module();
+        auto cond = mm->add_parameter("cond", cond_s);
+        auto l1   = mm->add_literal(migraphx::literal(s, data1));
+        auto l2   = mm->add_literal(migraphx::literal(s, data2));
+        auto r    = mm->add_instruction(migraphx::make_op("if"), cond, l1, l2);
         mm->add_return({r});
 
         return pi;
