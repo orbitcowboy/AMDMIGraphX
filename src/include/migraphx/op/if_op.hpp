@@ -21,12 +21,10 @@ struct if_op
 
     shape compute_shape(const std::vector<shape>& inputs, std::vector<module_ref> mods) const
     {
-        check_shapes{inputs, *this}.standard();
-
         // empty mod inputs, return
         if(mods.empty())
         {
-            if(inputs.at(1) != inputs.at(2))
+            if(inputs.at(1).lens() != inputs.at(2).lens())
             {
                 MIGRAPHX_THROW("IF: if and then arguments should have the same input shapes!");
             }

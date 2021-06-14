@@ -441,7 +441,12 @@ struct find_where_op
         auto ins_ind = r.instructions["ind"];
         std::vector<bool> vec_ind;
         auto arg_ind = ins_ind->eval();
+        if(arg_ind.empty())
+        {
+            return;
+        }
         arg_ind.visit([&](auto v) { vec_ind.assign(v.begin(), v.end()); });
+        
         // ind has to be the same value
         auto val = vec_ind.front();
         if(not std::all_of(vec_ind.begin(), vec_ind.end(), [&](auto v) { return (v == val); }))
