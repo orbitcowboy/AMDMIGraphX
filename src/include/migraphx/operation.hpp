@@ -103,11 +103,11 @@ auto operator==(const T& x, const U& y) -> decltype(x.name() == y.name())
 
 template <class T>
 auto normalize_compute_shape_op(rank<2>, const T& x, const std::vector<shape>& inputs)
-    -> decltype(x.normalize_compute_shape(inputs, {}))
+    -> decltype(x.compute_shape(inputs, {}))
 {
     dependent_type<operation, T> y = x;
     normalize_attributes(y, inputs[0].lens());
-    return any_cast<T>(y).normalize_compute_shape(inputs, {});
+    return any_cast<T>(y).compute_shape(inputs, {});
 }
 
 template <class T>

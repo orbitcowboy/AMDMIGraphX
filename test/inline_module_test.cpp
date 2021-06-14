@@ -111,8 +111,6 @@ TEST_CASE(inline_subgraph)
         migraphx::shape s{migraphx::shape::float_type, {5}};
         std::vector<float> data1      = {1, 2, 3, 4, 5};
         std::vector<float> data2      = {5, 4, 3, 2, 1};
-        std::vector<float> vec_offset = {5, 5, 5, 5, 5};
-        std::vector<float> vec_idx    = {5, 6, 7, 8, 9};
         migraphx::shape cond_s{migraphx::shape::bool_type};
 
         migraphx::program pi;
@@ -120,19 +118,7 @@ TEST_CASE(inline_subgraph)
         auto cond  = mm->add_parameter("cond", cond_s);
         auto l1    = mm->add_literal(migraphx::literal(s, data1));
         auto l2    = mm->add_literal(migraphx::literal(s, data2));
-        auto lidx  = mm->add_literal(migraphx::literal(s, vec_idx));
-        auto loff  = mm->add_literal(migraphx::literal(s, vec_offset));
-        auto icond = mm->add_instruction(
-            migraphx::make_op("convert", {{"target_type", migraphx::shape::float_type}}), cond);
-        auto mcond =
-            mm->add_instruction(migraphx::make_op("multibroadcast", {{"output_lens", {5}}}), icond);
-        auto co       = mm->add_instruction(migraphx::make_op("mul"), mcond, loff);
-        auto fcond    = mm->add_instruction(migraphx::make_op("sub"), lidx, co);
-        auto ins_cond = mm->add_instruction(
-            migraphx::make_op("convert", {{"target_type", migraphx::shape::int32_type}}), fcond);
-        auto cl = mm->add_instruction(migraphx::make_op("concat", {{"axis", 0}}), l1, l2);
-        auto rl = mm->add_instruction(migraphx::make_op("reshape", {{"dims", {10}}}), cl);
-        auto r  = mm->add_instruction(migraphx::make_op("gather", {{"axis", 0}}), rl, ins_cond);
+        auto r  = mm->add_instruction(migraphx::make_op("if"), cond, l1, l2);
         mm->add_return({r});
 
         return pi;

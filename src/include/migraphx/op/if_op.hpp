@@ -26,12 +26,12 @@ struct if_op
         // empty mod inputs, return
         if(mods.empty())
         {
-            if(inputs.at(0) != inputs.at(1))
+            if(inputs.at(1) != inputs.at(2))
             {
-                MIGRAPHX_THROW("IF: if and then argument should have the same input shapes!");
+                MIGRAPHX_THROW("IF: if and then arguments should have the same input shapes!");
             }
 
-            return inputs.at(0);
+            return inputs.at(1);
         }
         else if(mods.size() != 2)
         {
@@ -58,7 +58,7 @@ struct if_op
         auto cond = args.front().at<bool>();
         if(mods.empty())
         {
-            return cond ? args.at(0) : args.at(1);
+            return cond ? args.at(1) : args.at(2);
         }
 
         module_ref mod = cond ? mods[0] : mods[1];
