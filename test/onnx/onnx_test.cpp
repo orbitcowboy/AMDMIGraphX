@@ -3583,9 +3583,7 @@ TEST_CASE(where_test_cond_one_elem)
     auto lym = mm->add_instruction(
         migraphx::make_op("multibroadcast", {{"output_lens", {2, 2, 2, 2}}}), ly);
     auto cond = mm->add_instruction(
-        migraphx::make_op("convert",
-                          {{"target_type", migraphx::shape::bool_type}}),
-        lc);
+        migraphx::make_op("convert", {{"target_type", migraphx::shape::bool_type}}), lc);
     auto r = mm->add_instruction(migraphx::make_op("if"), cond, lxm, lym);
     mm->add_return({r});
 

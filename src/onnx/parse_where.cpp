@@ -16,8 +16,9 @@ struct parse_where : op_parser<parse_where>
                           const onnx_parser::node_info& info,
                           std::vector<instruction_ref> args) const
     {
-        auto lens = compute_broadcasted_lens(args[0]->get_shape().lens(), args[1]->get_shape().lens());
-        lens      = compute_broadcasted_lens(lens, args[2]->get_shape().lens());
+        auto lens =
+            compute_broadcasted_lens(args[0]->get_shape().lens(), args[1]->get_shape().lens());
+        lens = compute_broadcasted_lens(lens, args[2]->get_shape().lens());
         if(args[1]->get_shape().lens() != lens)
         {
             args[1] =
@@ -29,10 +30,10 @@ struct parse_where : op_parser<parse_where>
             args[2] =
                 info.add_instruction(make_op("multibroadcast", {{"output_lens", lens}}), args[2]);
         }
-        if (args[0]->get_shape().elements() == 1)
+        if(args[0]->get_shape().elements() == 1)
         {
-            auto cond =
-                info.add_instruction(make_op("convert", {{"target_type", shape::bool_type}}), args[0]);
+            auto cond = info.add_instruction(
+                make_op("convert", {{"target_type", shape::bool_type}}), args[0]);
             return info.add_instruction(make_op("if"), cond, args.at(1), args.at(2));
         }
 

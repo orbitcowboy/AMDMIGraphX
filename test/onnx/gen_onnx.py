@@ -4090,6 +4090,7 @@ def where_test():
 
     return ([node], [c, x, y], [z])
 
+
 @onnx_test
 def where_test_cond_one_elem():
     c = helper.make_tensor_value_info('c', TensorProto.BOOL, [1])

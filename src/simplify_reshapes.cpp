@@ -446,7 +446,7 @@ struct find_where_op
             return;
         }
         arg_ind.visit([&](auto v) { vec_ind.assign(v.begin(), v.end()); });
-        
+
         // ind has to be the same value
         auto val = vec_ind.front();
         if(not std::all_of(vec_ind.begin(), vec_ind.end(), [&](auto v) { return (v == val); }))
