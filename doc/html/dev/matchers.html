@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Matchers &#8212; MIGraphX 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Passes" href="pass.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="matchers">
+<h1>Matchers<a class="headerlink" href="#matchers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The matchers provide a way compose several predicates together. Many of the matchers can be composed so that <code class="docutils literal notranslate"><span class="pre">m(m1,</span> <span class="pre">m2)</span></code> will first check that <code class="docutils literal notranslate"><span class="pre">m</span></code> matches and then it will check that <code class="docutils literal notranslate"><span class="pre">m1</span></code> and <code class="docutils literal notranslate"><span class="pre">m2</span></code> will match.</p>
+<p>The most commonly-used matcher is the <code class="docutils literal notranslate"><span class="pre">name</span></code> matcher. It will match the instruction that have the operator that is equal to the name specified:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span> <span class="n">match_sum</span> <span class="o">=</span> <span class="n">name</span><span class="p">(</span><span class="s">&quot;sum&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This will find <code class="docutils literal notranslate"><span class="pre">sum</span></code> operators. We can also find <code class="docutils literal notranslate"><span class="pre">sum</span></code> operators which the output is <code class="docutils literal notranslate"><span class="pre">standard_shape</span></code>:</p>
+<blockquote>
+<div><p>auto match_sum = name(“sum”)(standard_shape());</p>
+</div></blockquote>
+</div>
+<div class="section" id="arguments">
+<h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h2>
+<p>We also want to match arguments to the instructions as well. One way, is to match each argument using the <code class="docutils literal notranslate"><span class="pre">arg</span></code> matcher:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span> <span class="n">match_sum</span> <span class="o">=</span> <span class="n">name</span><span class="p">(</span><span class="s">&quot;sum&quot;</span><span class="p">)(</span><span class="n">arg</span><span class="p">(</span><span class="mi">0</span><span class="p">)(</span><span class="n">name</span><span class="p">(</span><span class="s">&quot;@literal&quot;</span><span class="p">),</span> <span class="n">arg</span><span class="p">(</span><span class="mi">1</span><span class="p">)(</span><span class="n">name</span><span class="p">(</span><span class="s">&quot;@literal&quot;</span><span class="p">))));</span>
+</pre></div>
+</div>
+<p>This will match a <code class="docutils literal notranslate"><span class="pre">sum</span></code> operator with the two arguments that are literals. Of course, instead of writing <code class="docutils literal notranslate"><span class="pre">arg(0)</span></code> and <code class="docutils literal notranslate"><span class="pre">arg(1)</span></code> everytime, the <code class="docutils literal notranslate"><span class="pre">args</span></code> matcher can be used:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span> <span class="n">match_sum</span> <span class="o">=</span> <span class="n">name</span><span class="p">(</span><span class="s">&quot;sum&quot;</span><span class="p">)(</span><span class="n">args</span><span class="p">(</span><span class="n">name</span><span class="p">(</span><span class="s">&quot;@literal&quot;</span><span class="p">),</span> <span class="n">name</span><span class="p">(</span><span class="s">&quot;@literal&quot;</span><span class="p">)));</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="binding">
+<h2>Binding<a class="headerlink" href="#binding" title="Permalink to this headline">¶</a></h2>
+<p>As we traverse through the instructions we may want reference some of the instructions we find along the way. We can do this by calling <code class="docutils literal notranslate"><span class="pre">.bind</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span> <span class="n">match_sum</span> <span class="o">=</span> <span class="n">name</span><span class="p">(</span><span class="s">&quot;sum&quot;</span><span class="p">)(</span><span class="n">args</span><span class="p">(</span>
+                                <span class="n">name</span><span class="p">(</span><span class="s">&quot;@literal&quot;</span><span class="p">).</span><span class="n">bind</span><span class="p">(</span><span class="s">&quot;one&quot;</span><span class="p">),</span>
+                                <span class="n">name</span><span class="p">(</span><span class="s">&quot;@literal&quot;</span><span class="p">).</span><span class="n">bind</span><span class="p">(</span><span class="s">&quot;two&quot;</span><span class="p">)</span>
+                            <span class="p">)).</span><span class="n">bind</span><span class="p">(</span><span class="s">&quot;sum&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This will associate the instruction to a name that can be read from the <code class="docutils literal notranslate"><span class="pre">matcher_result</span></code> when it matches.</p>
+</div>
+<div class="section" id="finding-matches">
+<h2>Finding matches<a class="headerlink" href="#finding-matches" title="Permalink to this headline">¶</a></h2>
+<p>Finally, when you want to use the matchers to find instructions a callback object can be written which has the matcher and an <code class="docutils literal notranslate"><span class="pre">apply</span></code> function which will take the <code class="docutils literal notranslate"><span class="pre">matcher_result</span></code> when the match is found:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">match_find_sum</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="nf">matcher</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">name</span><span class="p">(</span><span class="s">&quot;sum&quot;</span><span class="p">);</span> <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="nf">apply</span><span class="p">(</span><span class="n">program</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">,</span> <span class="n">matcher_result</span> <span class="n">r</span><span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+        <span class="c1">// Do something with the result</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">find_matches</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">match_find_sum</span><span class="p">{});</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-matchers">
+<h2>Creating matchers<a class="headerlink" href="#creating-matchers" title="Permalink to this headline">¶</a></h2>
+<p>There are several ways to create matchers. The macros <code class="docutils literal notranslate"><span class="pre">MIGRAPH_BASIC_MATCHER</span></code> and <code class="docutils literal notranslate"><span class="pre">MIGRAPH_PRED_MATCHER</span></code> help with creating matchers. For example, we can create a matcher for shapes that are broadcasted:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">MIGRAPH_PRED_MATCHER</span><span class="p">(</span><span class="n">broadcasted_shape</span><span class="p">,</span> <span class="n">instruction_ref</span> <span class="n">ins</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="o">-&gt;</span><span class="n">get_shape</span><span class="p">().</span><span class="n">broadcasted</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If we want parameters to the predicate, then we will need to use the <code class="docutils literal notranslate"><span class="pre">make_basic_pred_matcher</span></code> to create the matcher. For example, here is how we would create a matcher to check the number of dimensions of the shape:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kr">inline</span> <span class="k">auto</span> <span class="n">number_of_dims</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="nf">make_basic_pred_matcher</span><span class="p">([</span><span class="o">=</span><span class="p">](</span><span class="n">instruction_ref</span> <span class="n">ins</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">ins</span><span class="o">-&gt;</span><span class="n">get_shape</span><span class="p">().</span><span class="n">lens</span><span class="p">().</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">n</span><span class="p">;</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">MIGraphX</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../py_user_guide.html">Python User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_user_guide.html">C++ User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../driver.html">MIGraphX Driver</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../developer_guide.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operators.html">Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="program.html">Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="targets.html">Targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quantization.html">Quantization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pass.html">Passes</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Matchers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#arguments">Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#binding">Binding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#finding-matches">Finding matches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-matchers">Creating matchers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../developer_guide.html">Developer Guide</a><ul>
+      <li>Previous: <a href="pass.html" title="previous chapter">Passes</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, AMD.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/dev/matchers.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

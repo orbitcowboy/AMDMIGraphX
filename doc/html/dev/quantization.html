@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Quantization &#8212; MIGraphX 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Passes" href="pass.html" />
+    <link rel="prev" title="Targets" href="targets.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="quantization">
+<h1>Quantization<a class="headerlink" href="#quantization" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="quantize-fp16">
+<h2>quantize_fp16<a class="headerlink" href="#quantize-fp16" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="_CPPv4N8migraphx8internal13quantize_fp16ER7programRKNSt6vectorINSt6stringEEE">
+<span id="_CPPv3N8migraphx8internal13quantize_fp16ER7programRKNSt6vectorINSt6stringEEE"></span><span id="_CPPv2N8migraphx8internal13quantize_fp16ER7programRKNSt6vectorINSt6stringEEE"></span><span id="migraphx::internal::quantize_fp16__programR.std::vector:ss:CR"></span><span class="target" id="namespacemigraphx_1_1internal_1a3da28d9084091d7603e0c5ca571bc026"></span>void <code class="sig-prename descclassname">migraphx::internal<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">quantize_fp16</code><span class="sig-paren">(</span><a class="reference internal" href="program.html#_CPPv4N8migraphx8internal7programE" title="migraphx::internal::program">program</a> &amp;<em>prog</em>, <em class="property">const</em> std::vector&lt;std::string&gt; &amp;<em>ins_names</em> = {&quot;all&quot;}<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8migraphx8internal13quantize_fp16ER7programRKNSt6vectorINSt6stringEEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="quantize-int8">
+<h2>quantize_int8<a class="headerlink" href="#quantize-int8" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="_CPPv4N8migraphx8internal13quantize_int8ER7programRK6targetRKNSt6vectorI13parameter_mapEERKNSt6vectorINSt6stringEEE">
+<span id="_CPPv3N8migraphx8internal13quantize_int8ER7programRK6targetRKNSt6vectorI13parameter_mapEERKNSt6vectorINSt6stringEEE"></span><span id="_CPPv2N8migraphx8internal13quantize_int8ER7programRK6targetRKNSt6vectorI13parameter_mapEERKNSt6vectorINSt6stringEEE"></span><span id="migraphx::internal::quantize_int8__programR.targetCR.std::vector:parameter_map:CR.std::vector:ss:CR"></span><span class="target" id="namespacemigraphx_1_1internal_1a1bce2cbf7df6939443d7f2921fd4dba3"></span>void <code class="sig-prename descclassname">migraphx::internal<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">quantize_int8</code><span class="sig-paren">(</span><a class="reference internal" href="program.html#_CPPv4N8migraphx8internal7programE" title="migraphx::internal::program">program</a> &amp;<em>prog</em>, <em class="property">const</em> <a class="reference internal" href="targets.html#_CPPv4N8migraphx8internal6targetE" title="migraphx::internal::target">target</a> &amp;<em>t</em>, <em class="property">const</em> std::vector&lt;parameter_map&gt; &amp;<em>calibration</em>, <em class="property">const</em> std::vector&lt;std::string&gt; &amp;<em>ins_names</em> = {&quot;dot&quot;, }<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8migraphx8internal13quantize_int8ER7programRK6targetRKNSt6vectorI13parameter_mapEERKNSt6vectorINSt6stringEEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">MIGraphX</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../py_user_guide.html">Python User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_user_guide.html">C++ User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../driver.html">MIGraphX Driver</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../developer_guide.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operators.html">Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="program.html">Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="targets.html">Targets</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Quantization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quantize-fp16">quantize_fp16</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quantize-int8">quantize_int8</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pass.html">Passes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matchers.html">Matchers</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../developer_guide.html">Developer Guide</a><ul>
+      <li>Previous: <a href="targets.html" title="previous chapter">Targets</a></li>
+      <li>Next: <a href="pass.html" title="next chapter">Passes</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, AMD.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/dev/quantization.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

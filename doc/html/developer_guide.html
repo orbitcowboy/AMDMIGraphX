@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Developer Guide &#8212; MIGraphX 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Overview" href="overview.html" />
+    <link rel="prev" title="MIGraphX Driver" href="driver.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="developer-guide">
+<h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#building-a-program">Building a program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#adding-parameters">Adding parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#tensor-data">Tensor data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#importing-from-onnx">Importing from onnx</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/data.html">Data types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/data.html#shape">shape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/data.html#literal">literal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/data.html#argument">argument</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/data.html#raw-data">raw_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/data.html#tensor-view">tensor_view</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/operators.html">Operators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/operators.html#operation">operation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/operators.html#id1">operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/program.html">Program</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/program.html#instruction">instruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/program.html#instruction-ref">instruction_ref</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/program.html#id1">program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/program.html#parse-onnx">parse_onnx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/program.html#parse-tf">parse_tf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/program.html#onnx-options">onnx_options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/program.html#tf-options">tf_options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/targets.html">Targets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/targets.html#target">target</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/targets.html#gpu-target">gpu::target</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/targets.html#cpu-target">cpu::target</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/quantization.html">Quantization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/quantization.html#quantize-fp16">quantize_fp16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/quantization.html#quantize-int8">quantize_int8</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/pass.html">Passes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html#pass">pass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html#dead-code-elimination">dead_code_elimination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html#eliminate-common-subexpression">eliminate_common_subexpression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html#eliminate-concat">eliminate_concat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html#eliminate-contiguous">eliminate_contiguous</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html#eliminate-identity">eliminate_identity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html#eliminate-pad">eliminate_pad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html#propagate-constant">propagate_constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html#rewrite-batchnorm">rewrite_batchnorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html#rewrite-rnn">rewrite_rnn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html#schedule">schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html#simplify-algebra">simplify_algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html#simplify-reshapes">simplify_reshapes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/matchers.html">Matchers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/matchers.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/matchers.html#arguments">Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/matchers.html#binding">Binding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/matchers.html#finding-matches">Finding matches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/matchers.html#creating-matchers">Creating matchers</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MIGraphX</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="py_user_guide.html">Python User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_user_guide.html">C++ User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="driver.html">MIGraphX Driver</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/data.html">Data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/operators.html">Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/program.html">Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/targets.html">Targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/quantization.html">Quantization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/pass.html">Passes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/matchers.html">Matchers</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="driver.html" title="previous chapter">MIGraphX Driver</a></li>
+      <li>Next: <a href="overview.html" title="next chapter">Overview</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, AMD.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/developer_guide.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

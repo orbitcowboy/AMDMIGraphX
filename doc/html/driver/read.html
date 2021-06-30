@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>&lt;no title&gt; &#8212; MIGraphX 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <dl class="option">
+<dt id="cmdoption-arg-input">
+<code class="sig-name descname">&lt;input</code><code class="sig-prename descclassname"> file&gt;</code><a class="headerlink" href="#cmdoption-arg-input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>File to load</p>
+<dl class="option">
+<dt id="cmdoption-model">
+<code class="sig-name descname">--model</code><code class="sig-prename descclassname"> [resnet50|inceptionv3|alexnet]</code><a class="headerlink" href="#cmdoption-model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Load model</p>
+<dl class="option">
+<dt id="cmdoption-onnx">
+<code class="sig-name descname">--onnx</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-onnx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Load as onnx</p>
+<dl class="option">
+<dt id="cmdoption-tf">
+<code class="sig-name descname">--tf</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-tf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Load as tensorflow</p>
+<dl class="option">
+<dt id="cmdoption-migraphx">
+<code class="sig-name descname">--migraphx</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-migraphx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Load as MIGraphX</p>
+<dl class="option">
+<dt id="cmdoption-migraphx-json">
+<code class="sig-name descname">--migraphx-json</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-migraphx-json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Load as MIGraphX JSON</p>
+<dl class="option">
+<dt id="cmdoption-batch">
+<code class="sig-name descname">--batch</code><code class="sig-prename descclassname"> [unsigned int] (Default: 1)</code><a class="headerlink" href="#cmdoption-batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Set batch size for model</p>
+<dl class="option">
+<dt id="cmdoption-nhwc">
+<code class="sig-name descname">--nhwc</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-nhwc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Treat tensorflow format as nhwc</p>
+<dl class="option">
+<dt id="cmdoption-skip-unknown-operators">
+<code class="sig-name descname">--skip-unknown-operators</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-skip-unknown-operators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Skip unknown operators when parsing and continue to parse.</p>
+<dl class="option">
+<dt id="cmdoption-nchw">
+<code class="sig-name descname">--nchw</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-nchw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Treat tensorflow format as nchw</p>
+<dl class="option">
+<dt id="cmdoption-trim">
+<code class="sig-name descname">--trim</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">-t</code><code class="sig-prename descclassname"> [unsigned int]</code><a class="headerlink" href="#cmdoption-trim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Trim instructions from the end (Default: 0)</p>
+<dl class="option">
+<dt id="cmdoption-input-dim">
+<code class="sig-name descname">--input-dim</code><code class="sig-prename descclassname"> [std::vector&lt;std::string&gt;]</code><a class="headerlink" href="#cmdoption-input-dim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Dim of a parameter (format: “&#64;name d1 d2 dn”)</p>
+<dl class="option">
+<dt id="cmdoption-optimize">
+<code class="sig-name descname">--optimize</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">-O</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-optimize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Optimize when reading</p>
+<dl class="option">
+<dt id="cmdoption-graphviz">
+<code class="sig-name descname">--graphviz</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">-g</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-graphviz" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Print out a graphviz representation.</p>
+<dl class="option">
+<dt id="cmdoption-brief">
+<code class="sig-name descname">--brief</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-brief" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Make the output brief.</p>
+<dl class="option">
+<dt id="cmdoption-cpp">
+<code class="sig-name descname">--cpp</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-cpp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Print out the program as cpp program.</p>
+<dl class="option">
+<dt id="cmdoption-json">
+<code class="sig-name descname">--json</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Print out program as json.</p>
+<dl class="option">
+<dt id="cmdoption-text">
+<code class="sig-name descname">--text</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Print out program in text format.</p>
+<dl class="option">
+<dt id="cmdoption-binary">
+<code class="sig-name descname">--binary</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-binary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Print out program in binary format.</p>
+<dl class="option">
+<dt id="cmdoption-output">
+<code class="sig-name descname">--output</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">-o</code><code class="sig-prename descclassname"> [std::string]</code><a class="headerlink" href="#cmdoption-output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Output to file.</p>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">MIGraphX</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../py_user_guide.html">Python User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_user_guide.html">C++ User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../driver.html">MIGraphX Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide.html">Developer Guide</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, AMD.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/driver/read.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

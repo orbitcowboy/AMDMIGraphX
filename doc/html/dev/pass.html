@@ -1,0 +1,466 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Passes &#8212; MIGraphX 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Matchers" href="matchers.html" />
+    <link rel="prev" title="Quantization" href="quantization.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="passes">
+<h1>Passes<a class="headerlink" href="#passes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="pass">
+<h2>pass<a class="headerlink" href="#pass" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="_CPPv4N8migraphx8internal4passE">
+<span id="_CPPv3N8migraphx8internal4passE"></span><span id="_CPPv2N8migraphx8internal4passE"></span><span id="migraphx::internal::pass"></span><span class="target" id="structmigraphx_1_1internal_1_1pass"></span><em class="property">struct </em><code class="sig-name descname">pass</code><a class="headerlink" href="#_CPPv4N8migraphx8internal4passE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>An interface for applying a transformation to the instructions in a <code class="docutils literal notranslate"><span class="pre">program</span></code> </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal4pass4nameEv">
+<span id="_CPPv3NK8migraphx8internal4pass4nameEv"></span><span id="_CPPv2NK8migraphx8internal4pass4nameEv"></span><span id="migraphx::internal::pass::nameC"></span><span class="target" id="structmigraphx_1_1internal_1_1pass_1a74c3534916850024a5666480e874bbcb"></span>std::string <code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal4pass4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>A unique name used to identify the pass. </p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal4pass5applyER6module">
+<span id="_CPPv3NK8migraphx8internal4pass5applyER6module"></span><span id="_CPPv2NK8migraphx8internal4pass5applyER6module"></span><span id="migraphx::internal::pass::apply__moduleRC"></span><span class="target" id="structmigraphx_1_1internal_1_1pass_1a22b501250ffeffe38452ef922154b5bb"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span>module &amp;<em>m</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal4pass5applyER6module" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Run the pass on the module. </p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal4pass5applyER7program">
+<span id="_CPPv3NK8migraphx8internal4pass5applyER7program"></span><span id="_CPPv2NK8migraphx8internal4pass5applyER7program"></span><span id="migraphx::internal::pass::apply__programRC"></span><span class="target" id="structmigraphx_1_1internal_1_1pass_1a2aca457829b9b333c8e165825f39848f"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span><a class="reference internal" href="program.html#_CPPv4N8migraphx8internal7programE" title="migraphx::internal::program">program</a> &amp;<em>p</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal4pass5applyER7program" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Run the pass on the program. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="dead-code-elimination">
+<h2>dead_code_elimination<a class="headerlink" href="#dead-code-elimination" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="_CPPv4N8migraphx8internal21dead_code_eliminationE">
+<span id="_CPPv3N8migraphx8internal21dead_code_eliminationE"></span><span id="_CPPv2N8migraphx8internal21dead_code_eliminationE"></span><span id="migraphx::internal::dead_code_elimination"></span><span class="target" id="structmigraphx_1_1internal_1_1dead__code__elimination"></span><em class="property">struct </em><code class="sig-name descname">dead_code_elimination</code><a class="headerlink" href="#_CPPv4N8migraphx8internal21dead_code_eliminationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Remove instructions where the output is not used. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal21dead_code_elimination4nameEv">
+<span id="_CPPv3NK8migraphx8internal21dead_code_elimination4nameEv"></span><span id="_CPPv2NK8migraphx8internal21dead_code_elimination4nameEv"></span><span id="migraphx::internal::dead_code_elimination::nameC"></span><span class="target" id="structmigraphx_1_1internal_1_1dead__code__elimination_1a2f815db343e1dfe4868c38db94b18fc8"></span>std::string <code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal21dead_code_elimination4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal21dead_code_elimination5applyER6module">
+<span id="_CPPv3NK8migraphx8internal21dead_code_elimination5applyER6module"></span><span id="_CPPv2NK8migraphx8internal21dead_code_elimination5applyER6module"></span><span id="migraphx::internal::dead_code_elimination::apply__moduleRC"></span><span class="target" id="structmigraphx_1_1internal_1_1dead__code__elimination_1ab374ecbf967890b9afdf0f50154eea8a"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span>module &amp;<em>m</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal21dead_code_elimination5applyER6module" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal21dead_code_elimination5applyER7program">
+<span id="_CPPv3NK8migraphx8internal21dead_code_elimination5applyER7program"></span><span id="_CPPv2NK8migraphx8internal21dead_code_elimination5applyER7program"></span><span id="migraphx::internal::dead_code_elimination::apply__programRC"></span><span class="target" id="structmigraphx_1_1internal_1_1dead__code__elimination_1afb2d92ac2dac6fa0e528bc9519865194"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span><a class="reference internal" href="program.html#_CPPv4N8migraphx8internal7programE" title="migraphx::internal::program">program</a> &amp;<em>p</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal21dead_code_elimination5applyER7program" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="eliminate-common-subexpression">
+<h2>eliminate_common_subexpression<a class="headerlink" href="#eliminate-common-subexpression" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="_CPPv4N8migraphx8internal30eliminate_common_subexpressionE">
+<span id="_CPPv3N8migraphx8internal30eliminate_common_subexpressionE"></span><span id="_CPPv2N8migraphx8internal30eliminate_common_subexpressionE"></span><span id="migraphx::internal::eliminate_common_subexpression"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__common__subexpression"></span><em class="property">struct </em><code class="sig-name descname">eliminate_common_subexpression</code><a class="headerlink" href="#_CPPv4N8migraphx8internal30eliminate_common_subexpressionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Remove identical instructions. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal30eliminate_common_subexpression4nameEv">
+<span id="_CPPv3NK8migraphx8internal30eliminate_common_subexpression4nameEv"></span><span id="_CPPv2NK8migraphx8internal30eliminate_common_subexpression4nameEv"></span><span id="migraphx::internal::eliminate_common_subexpression::nameC"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__common__subexpression_1a2a36d2ccc1a92cb0f63483569802c07d"></span>std::string <code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal30eliminate_common_subexpression4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal30eliminate_common_subexpression5applyER6module">
+<span id="_CPPv3NK8migraphx8internal30eliminate_common_subexpression5applyER6module"></span><span id="_CPPv2NK8migraphx8internal30eliminate_common_subexpression5applyER6module"></span><span id="migraphx::internal::eliminate_common_subexpression::apply__moduleRC"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__common__subexpression_1a0a9ea7531f7c4589413a60d644afbaed"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span>module &amp;<em>p</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal30eliminate_common_subexpression5applyER6module" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="eliminate-concat">
+<h2>eliminate_concat<a class="headerlink" href="#eliminate-concat" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="_CPPv4N8migraphx8internal16eliminate_concatE">
+<span id="_CPPv3N8migraphx8internal16eliminate_concatE"></span><span id="_CPPv2N8migraphx8internal16eliminate_concatE"></span><span id="migraphx::internal::eliminate_concat"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__concat"></span><em class="property">struct </em><code class="sig-name descname">eliminate_concat</code><a class="headerlink" href="#_CPPv4N8migraphx8internal16eliminate_concatE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Remove concat operators by having each operator can write to different chunk of memory. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal16eliminate_concat4nameEv">
+<span id="_CPPv3NK8migraphx8internal16eliminate_concat4nameEv"></span><span id="_CPPv2NK8migraphx8internal16eliminate_concat4nameEv"></span><span id="migraphx::internal::eliminate_concat::nameC"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__concat_1ade6e10f0680f7674261b5459fdd21962"></span>std::string <code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal16eliminate_concat4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal16eliminate_concat5applyER6module">
+<span id="_CPPv3NK8migraphx8internal16eliminate_concat5applyER6module"></span><span id="_CPPv2NK8migraphx8internal16eliminate_concat5applyER6module"></span><span id="migraphx::internal::eliminate_concat::apply__moduleRC"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__concat_1a7ca80a853fd27442f45993305d6963f2"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span>module &amp;<em>p</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal16eliminate_concat5applyER6module" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="member">
+<dt id="_CPPv4N8migraphx8internal16eliminate_concat10concat_optE">
+<span id="_CPPv3N8migraphx8internal16eliminate_concat10concat_optE"></span><span id="_CPPv2N8migraphx8internal16eliminate_concat10concat_optE"></span><span id="migraphx::internal::eliminate_concat::concat_opt__concat_optimization"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__concat_1a50a87b0c937425ad2a46016588001217"></span>concat_optimization <code class="sig-name descname">concat_opt</code><a class="headerlink" href="#_CPPv4N8migraphx8internal16eliminate_concat10concat_optE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="eliminate-contiguous">
+<h2>eliminate_contiguous<a class="headerlink" href="#eliminate-contiguous" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="_CPPv4N8migraphx8internal20eliminate_contiguousE">
+<span id="_CPPv3N8migraphx8internal20eliminate_contiguousE"></span><span id="_CPPv2N8migraphx8internal20eliminate_contiguousE"></span><span id="migraphx::internal::eliminate_contiguous"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__contiguous"></span><em class="property">struct </em><code class="sig-name descname">eliminate_contiguous</code><a class="headerlink" href="#_CPPv4N8migraphx8internal20eliminate_contiguousE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Remove contiguous instructions by checking if the operator can use non-standard shapes. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal20eliminate_contiguous4nameEv">
+<span id="_CPPv3NK8migraphx8internal20eliminate_contiguous4nameEv"></span><span id="_CPPv2NK8migraphx8internal20eliminate_contiguous4nameEv"></span><span id="migraphx::internal::eliminate_contiguous::nameC"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__contiguous_1a3e01c74dad2b3e82f038064b89a33352"></span>std::string <code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal20eliminate_contiguous4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal20eliminate_contiguous5applyER6module">
+<span id="_CPPv3NK8migraphx8internal20eliminate_contiguous5applyER6module"></span><span id="_CPPv2NK8migraphx8internal20eliminate_contiguous5applyER6module"></span><span id="migraphx::internal::eliminate_contiguous::apply__moduleRC"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__contiguous_1a16909fe3e064ff5f790910e191e97d02"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span>module &amp;<em>p</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal20eliminate_contiguous5applyER6module" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="member">
+<dt id="_CPPv4N8migraphx8internal20eliminate_contiguous7op_nameE">
+<span id="_CPPv3N8migraphx8internal20eliminate_contiguous7op_nameE"></span><span id="_CPPv2N8migraphx8internal20eliminate_contiguous7op_nameE"></span><span id="migraphx::internal::eliminate_contiguous::op_name__ss"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__contiguous_1a4d17b271f13de4eb7a8bb9a6db01498d"></span>std::string <code class="sig-name descname">op_name</code><a class="headerlink" href="#_CPPv4N8migraphx8internal20eliminate_contiguous7op_nameE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="eliminate-identity">
+<h2>eliminate_identity<a class="headerlink" href="#eliminate-identity" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="_CPPv4N8migraphx8internal18eliminate_identityE">
+<span id="_CPPv3N8migraphx8internal18eliminate_identityE"></span><span id="_CPPv2N8migraphx8internal18eliminate_identityE"></span><span id="migraphx::internal::eliminate_identity"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__identity"></span><em class="property">struct </em><code class="sig-name descname">eliminate_identity</code><a class="headerlink" href="#_CPPv4N8migraphx8internal18eliminate_identityE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Remove identity instructions. Currently when used as the last pass, it will preserve the semantics of previous program state, therefore dead code elimination should not be used afterwards. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal18eliminate_identity4nameEv">
+<span id="_CPPv3NK8migraphx8internal18eliminate_identity4nameEv"></span><span id="_CPPv2NK8migraphx8internal18eliminate_identity4nameEv"></span><span id="migraphx::internal::eliminate_identity::nameC"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__identity_1a91433842bd05bd3dc2fd13b50b0e07ab"></span>std::string <code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal18eliminate_identity4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal18eliminate_identity5applyER6module">
+<span id="_CPPv3NK8migraphx8internal18eliminate_identity5applyER6module"></span><span id="_CPPv2NK8migraphx8internal18eliminate_identity5applyER6module"></span><span id="migraphx::internal::eliminate_identity::apply__moduleRC"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__identity_1acbbf213f07b5427a0fc825c085ea4605"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span>module &amp;<em>p</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal18eliminate_identity5applyER6module" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="eliminate-pad">
+<h2>eliminate_pad<a class="headerlink" href="#eliminate-pad" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="_CPPv4N8migraphx8internal13eliminate_padE">
+<span id="_CPPv3N8migraphx8internal13eliminate_padE"></span><span id="_CPPv2N8migraphx8internal13eliminate_padE"></span><span id="migraphx::internal::eliminate_pad"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__pad"></span><em class="property">struct </em><code class="sig-name descname">eliminate_pad</code><a class="headerlink" href="#_CPPv4N8migraphx8internal13eliminate_padE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Remove pads if they can be written as an attribute to another op (im2col, convolution, pooling) </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal13eliminate_pad4nameEv">
+<span id="_CPPv3NK8migraphx8internal13eliminate_pad4nameEv"></span><span id="_CPPv2NK8migraphx8internal13eliminate_pad4nameEv"></span><span id="migraphx::internal::eliminate_pad::nameC"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__pad_1af84a5c68c50ed77eea329b581201a947"></span>std::string <code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal13eliminate_pad4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal13eliminate_pad5applyER6module">
+<span id="_CPPv3NK8migraphx8internal13eliminate_pad5applyER6module"></span><span id="_CPPv2NK8migraphx8internal13eliminate_pad5applyER6module"></span><span id="migraphx::internal::eliminate_pad::apply__moduleRC"></span><span class="target" id="structmigraphx_1_1internal_1_1eliminate__pad_1a7283bae5e6bf572a732953a0ad3581ce"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span>module &amp;<em>m</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal13eliminate_pad5applyER6module" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="propagate-constant">
+<h2>propagate_constant<a class="headerlink" href="#propagate-constant" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="_CPPv4N8migraphx8internal18propagate_constantE">
+<span id="_CPPv3N8migraphx8internal18propagate_constantE"></span><span id="_CPPv2N8migraphx8internal18propagate_constantE"></span><span id="migraphx::internal::propagate_constant"></span><span class="target" id="structmigraphx_1_1internal_1_1propagate__constant"></span><em class="property">struct </em><code class="sig-name descname">propagate_constant</code><a class="headerlink" href="#_CPPv4N8migraphx8internal18propagate_constantE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Replace instructions which take all literals with a literal of the computation. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal18propagate_constant4nameEv">
+<span id="_CPPv3NK8migraphx8internal18propagate_constant4nameEv"></span><span id="_CPPv2NK8migraphx8internal18propagate_constant4nameEv"></span><span id="migraphx::internal::propagate_constant::nameC"></span><span class="target" id="structmigraphx_1_1internal_1_1propagate__constant_1aa06679544a67452dd3c1eed9ff949027"></span>std::string <code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal18propagate_constant4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal18propagate_constant5applyER6module">
+<span id="_CPPv3NK8migraphx8internal18propagate_constant5applyER6module"></span><span id="_CPPv2NK8migraphx8internal18propagate_constant5applyER6module"></span><span id="migraphx::internal::propagate_constant::apply__moduleRC"></span><span class="target" id="structmigraphx_1_1internal_1_1propagate__constant_1a0ac2df3271e16346c9a73452c95400d4"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span>module &amp;<em>p</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal18propagate_constant5applyER6module" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="rewrite-batchnorm">
+<h2>rewrite_batchnorm<a class="headerlink" href="#rewrite-batchnorm" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="_CPPv4N8migraphx8internal17rewrite_batchnormE">
+<span id="_CPPv3N8migraphx8internal17rewrite_batchnormE"></span><span id="_CPPv2N8migraphx8internal17rewrite_batchnormE"></span><span id="migraphx::internal::rewrite_batchnorm"></span><span class="target" id="structmigraphx_1_1internal_1_1rewrite__batchnorm"></span><em class="property">struct </em><code class="sig-name descname">rewrite_batchnorm</code><a class="headerlink" href="#_CPPv4N8migraphx8internal17rewrite_batchnormE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Rewrite batchnorm to a multiply and add. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal17rewrite_batchnorm4nameEv">
+<span id="_CPPv3NK8migraphx8internal17rewrite_batchnorm4nameEv"></span><span id="_CPPv2NK8migraphx8internal17rewrite_batchnorm4nameEv"></span><span id="migraphx::internal::rewrite_batchnorm::nameC"></span><span class="target" id="structmigraphx_1_1internal_1_1rewrite__batchnorm_1ad8714e5719ad29b6b82039dc7ac132d1"></span>std::string <code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal17rewrite_batchnorm4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal17rewrite_batchnorm5applyER6module">
+<span id="_CPPv3NK8migraphx8internal17rewrite_batchnorm5applyER6module"></span><span id="_CPPv2NK8migraphx8internal17rewrite_batchnorm5applyER6module"></span><span id="migraphx::internal::rewrite_batchnorm::apply__moduleRC"></span><span class="target" id="structmigraphx_1_1internal_1_1rewrite__batchnorm_1a68f67a98bcef06a24759eb6408bd0cfd"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span>module &amp;<em>p</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal17rewrite_batchnorm5applyER6module" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="rewrite-rnn">
+<h2>rewrite_rnn<a class="headerlink" href="#rewrite-rnn" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="_CPPv4N8migraphx8internal11rewrite_rnnE">
+<span id="_CPPv3N8migraphx8internal11rewrite_rnnE"></span><span id="_CPPv2N8migraphx8internal11rewrite_rnnE"></span><span id="migraphx::internal::rewrite_rnn"></span><span class="target" id="structmigraphx_1_1internal_1_1rewrite__rnn"></span><em class="property">struct </em><code class="sig-name descname">rewrite_rnn</code><a class="headerlink" href="#_CPPv4N8migraphx8internal11rewrite_rnnE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Rewrite rnn to gemm and add. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal11rewrite_rnn4nameEv">
+<span id="_CPPv3NK8migraphx8internal11rewrite_rnn4nameEv"></span><span id="_CPPv2NK8migraphx8internal11rewrite_rnn4nameEv"></span><span id="migraphx::internal::rewrite_rnn::nameC"></span><span class="target" id="structmigraphx_1_1internal_1_1rewrite__rnn_1a45a73c1b5ceabbd382198630f0fb5fbe"></span>std::string <code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal11rewrite_rnn4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal11rewrite_rnn5applyER6module">
+<span id="_CPPv3NK8migraphx8internal11rewrite_rnn5applyER6module"></span><span id="_CPPv2NK8migraphx8internal11rewrite_rnn5applyER6module"></span><span id="migraphx::internal::rewrite_rnn::apply__moduleRC"></span><span class="target" id="structmigraphx_1_1internal_1_1rewrite__rnn_1a7cc43b11c5369a2c3eaac907716d6fc0"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span>module &amp;<em>prog</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal11rewrite_rnn5applyER6module" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="schedule">
+<h2>schedule<a class="headerlink" href="#schedule" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="_CPPv4N8migraphx8internal8scheduleE">
+<span id="_CPPv3N8migraphx8internal8scheduleE"></span><span id="_CPPv2N8migraphx8internal8scheduleE"></span><span id="migraphx::internal::schedule"></span><span class="target" id="structmigraphx_1_1internal_1_1schedule"></span><em class="property">struct </em><code class="sig-name descname">schedule</code><a class="headerlink" href="#_CPPv4N8migraphx8internal8scheduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Schedule instructions for concurrent execution </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal8schedule4nameEv">
+<span id="_CPPv3NK8migraphx8internal8schedule4nameEv"></span><span id="_CPPv2NK8migraphx8internal8schedule4nameEv"></span><span id="migraphx::internal::schedule::nameC"></span><span class="target" id="structmigraphx_1_1internal_1_1schedule_1aa31d777eab7c36291feb188ce1fd6a5d"></span>std::string <code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal8schedule4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal8schedule5applyER6module">
+<span id="_CPPv3NK8migraphx8internal8schedule5applyER6module"></span><span id="_CPPv2NK8migraphx8internal8schedule5applyER6module"></span><span id="migraphx::internal::schedule::apply__moduleRC"></span><span class="target" id="structmigraphx_1_1internal_1_1schedule_1a6e6e2dd4919cb1d152800d866d2c5a20"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span>module &amp;<em>p</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal8schedule5applyER6module" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="member">
+<dt id="_CPPv4N8migraphx8internal8schedule5modelE">
+<span id="_CPPv3N8migraphx8internal8schedule5modelE"></span><span id="_CPPv2N8migraphx8internal8schedule5modelE"></span><span id="migraphx::internal::schedule::model__schedule_model"></span><span class="target" id="structmigraphx_1_1internal_1_1schedule_1ad8fab4dfdf856ef7cd222dc313617d43"></span>schedule_model <code class="sig-name descname">model</code> = {}<a class="headerlink" href="#_CPPv4N8migraphx8internal8schedule5modelE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="member">
+<dt id="_CPPv4N8migraphx8internal8schedule6enableE">
+<span id="_CPPv3N8migraphx8internal8schedule6enableE"></span><span id="_CPPv2N8migraphx8internal8schedule6enableE"></span><span id="migraphx::internal::schedule::enable__b"></span><span class="target" id="structmigraphx_1_1internal_1_1schedule_1a4d720c52521eb57dbf2ea22e08b68970"></span>bool <code class="sig-name descname">enable</code> = true<a class="headerlink" href="#_CPPv4N8migraphx8internal8schedule6enableE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="simplify-algebra">
+<h2>simplify_algebra<a class="headerlink" href="#simplify-algebra" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="_CPPv4N8migraphx8internal16simplify_algebraE">
+<span id="_CPPv3N8migraphx8internal16simplify_algebraE"></span><span id="_CPPv2N8migraphx8internal16simplify_algebraE"></span><span id="migraphx::internal::simplify_algebra"></span><span class="target" id="structmigraphx_1_1internal_1_1simplify__algebra"></span><em class="property">struct </em><code class="sig-name descname">simplify_algebra</code><a class="headerlink" href="#_CPPv4N8migraphx8internal16simplify_algebraE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Simplify many algebraic instructions to more efficient versions. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal16simplify_algebra4nameEv">
+<span id="_CPPv3NK8migraphx8internal16simplify_algebra4nameEv"></span><span id="_CPPv2NK8migraphx8internal16simplify_algebra4nameEv"></span><span id="migraphx::internal::simplify_algebra::nameC"></span><span class="target" id="structmigraphx_1_1internal_1_1simplify__algebra_1a01d9764f1cea6f77b9a1ebf378884215"></span>std::string <code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal16simplify_algebra4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal16simplify_algebra5applyER6module">
+<span id="_CPPv3NK8migraphx8internal16simplify_algebra5applyER6module"></span><span id="_CPPv2NK8migraphx8internal16simplify_algebra5applyER6module"></span><span id="migraphx::internal::simplify_algebra::apply__moduleRC"></span><span class="target" id="structmigraphx_1_1internal_1_1simplify__algebra_1a8a6586836b81a2287affdfac265e132d"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span>module &amp;<em>p</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal16simplify_algebra5applyER6module" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="simplify-reshapes">
+<h2>simplify_reshapes<a class="headerlink" href="#simplify-reshapes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="_CPPv4N8migraphx8internal17simplify_reshapesE">
+<span id="_CPPv3N8migraphx8internal17simplify_reshapesE"></span><span id="_CPPv2N8migraphx8internal17simplify_reshapesE"></span><span id="migraphx::internal::simplify_reshapes"></span><span class="target" id="structmigraphx_1_1internal_1_1simplify__reshapes"></span><em class="property">struct </em><code class="sig-name descname">simplify_reshapes</code><a class="headerlink" href="#_CPPv4N8migraphx8internal17simplify_reshapesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Eliminate redundant reshapes. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal17simplify_reshapes4nameEv">
+<span id="_CPPv3NK8migraphx8internal17simplify_reshapes4nameEv"></span><span id="_CPPv2NK8migraphx8internal17simplify_reshapes4nameEv"></span><span id="migraphx::internal::simplify_reshapes::nameC"></span><span class="target" id="structmigraphx_1_1internal_1_1simplify__reshapes_1ac02ff79885e8b3943f665c499387f939"></span>std::string <code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal17simplify_reshapes4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK8migraphx8internal17simplify_reshapes5applyER6module">
+<span id="_CPPv3NK8migraphx8internal17simplify_reshapes5applyER6module"></span><span id="_CPPv2NK8migraphx8internal17simplify_reshapes5applyER6module"></span><span id="migraphx::internal::simplify_reshapes::apply__moduleRC"></span><span class="target" id="structmigraphx_1_1internal_1_1simplify__reshapes_1ae642fe6be2fa0bc89f101f78820d5a4e"></span>void <code class="sig-name descname">apply</code><span class="sig-paren">(</span>module &amp;<em>p</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK8migraphx8internal17simplify_reshapes5applyER6module" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">MIGraphX</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../py_user_guide.html">Python User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_user_guide.html">C++ User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../driver.html">MIGraphX Driver</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../developer_guide.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operators.html">Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="program.html">Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="targets.html">Targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quantization.html">Quantization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Passes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pass">pass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dead-code-elimination">dead_code_elimination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eliminate-common-subexpression">eliminate_common_subexpression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eliminate-concat">eliminate_concat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eliminate-contiguous">eliminate_contiguous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eliminate-identity">eliminate_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eliminate-pad">eliminate_pad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#propagate-constant">propagate_constant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rewrite-batchnorm">rewrite_batchnorm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rewrite-rnn">rewrite_rnn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#schedule">schedule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simplify-algebra">simplify_algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simplify-reshapes">simplify_reshapes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="matchers.html">Matchers</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../developer_guide.html">Developer Guide</a><ul>
+      <li>Previous: <a href="quantization.html" title="previous chapter">Quantization</a></li>
+      <li>Next: <a href="matchers.html" title="next chapter">Matchers</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, AMD.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/dev/pass.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
