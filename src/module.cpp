@@ -6,6 +6,7 @@
 #include <migraphx/ranges.hpp>
 #include <migraphx/time.hpp>
 #include <migraphx/iterator_for.hpp>
+#include <migraphx/iterator.hpp>
 #include <migraphx/pass_manager.hpp>
 #include <migraphx/make_op.hpp>
 #include <migraphx/register_target.hpp>
@@ -30,7 +31,7 @@ struct module_impl
 
     bool contains(instruction_ref ins) const
     {
-        if(ins == instructions.end())
+        if(is_end(ins, instructions.end()))
             return false;
         return instruction_set.count(std::addressof(*ins)) > 0;
     }
@@ -149,14 +150,7 @@ void module::assign(const module& m)
             }
             else
             {
-                if(module_args.empty())
-                {
-                    copy_ins = add_instruction(ins->get_operator(), copy_inputs);
-                }
-                else
-                {
-                    copy_ins = add_instruction(ins->get_operator(), copy_inputs, module_args);
-                }
+                copy_ins = add_instruction(ins->get_operator(), copy_inputs, module_args);
             }
         }
 
@@ -446,17 +440,19 @@ bool is_borrowed(instruction_ref ins)
     auto alias = instruction::get_output_alias(ins, true);
     if(alias == ins)
         return false;
-    if(alias->get_operator().is_borrowed())
+    lifetime l = alias->get_operator().get_lifetime();
+    if(l == lifetime::borrow)
         return true;
     return is_borrowed(alias);
 }
 
-bool is_param_alias(instruction_ref ins)
+bool is_global(instruction_ref ins)
 {
-    return instruction::get_output_alias(ins)->name() == "@param";
+    const auto& op = instruction::get_output_alias(ins)->get_operator();
+    return op.name() == "@param" or op.get_lifetime() == lifetime::global;
 }
 
-bool is_dangling(instruction_ref ins) { return not is_param_alias(ins) and is_borrowed(ins); }
+bool is_dangling(instruction_ref ins) { return not is_global(ins) and is_borrowed(ins); }
 
 instruction_ref module::find_dangling_reference() const
 {
@@ -498,7 +494,7 @@ void module::debug_print() const { std::cout << *this << std::endl; }
 void module::debug_print(instruction_ref ins,
                          std::unordered_map<instruction_ref, std::string>& names) const
 {
-    if(ins == this->end())
+    if(is_end(ins, this->end()))
     {
         std::cout << "End instruction" << std::endl;
         return;

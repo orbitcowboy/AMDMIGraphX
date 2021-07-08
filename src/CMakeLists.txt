@@ -23,18 +23,21 @@ add_library(migraphx
     eliminate_data_type.cpp
     eliminate_identity.cpp
     eliminate_pad.cpp
+    insert_pad.cpp
     file_buffer.cpp
     rewrite_batchnorm.cpp
     rewrite_rnn.cpp
     rewrite_pooling.cpp
     env.cpp
     generate.cpp
+    inline_module.cpp
     instruction.cpp
     load_save.cpp
     make_op.cpp
     msgpack.cpp
     operation.cpp
     permutation.cpp
+    preallocate_param.cpp
     process.cpp
     program.cpp
     module.cpp
@@ -99,6 +102,7 @@ register_migraphx_ops(
     flatten
     floor
     gather
+    get_tuple_elem
     greater
     gru
     identity
@@ -119,6 +123,7 @@ register_migraphx_ops(
     mul
     multibroadcast
     neg
+    nonzero
     outline
     pad
     pooling
@@ -143,6 +148,7 @@ register_migraphx_ops(
     round
     rsqrt
     scalar
+    scatter
     sigmoid
     sign
     sinh

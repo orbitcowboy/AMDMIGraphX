@@ -10,8 +10,11 @@
 #include <migraphx/eliminate_data_type.hpp>
 #include <migraphx/eliminate_identity.hpp>
 #include <migraphx/eliminate_pad.hpp>
+#include <migraphx/inline_module.hpp>
+#include <migraphx/insert_pad.hpp>
 #include <migraphx/memory_coloring.hpp>
 #include <migraphx/normalize_ops.hpp>
+#include <migraphx/preallocate_param.hpp>
 #include <migraphx/propagate_constant.hpp>
 #include <migraphx/register_target.hpp>
 #include <migraphx/remap.hpp>
@@ -29,7 +32,6 @@
 #include <migraphx/gpu/lowering.hpp>
 #include <migraphx/gpu/mlir_conv.hpp>
 #include <migraphx/gpu/pack_int8_args.hpp>
-#include <migraphx/gpu/preallocate_param.hpp>
 #include <migraphx/gpu/schedule_model.hpp>
 #include <migraphx/gpu/sync_device.hpp>
 #include <migraphx/gpu/target.hpp>
@@ -50,6 +52,7 @@ std::vector<pass> target::get_passes(migraphx::context& gctx, const compile_opti
     unsupported_types.erase(shape::type_t::bool_type);
     unsupported_types.erase(shape::type_t::int8_type);
     unsupported_types.erase(shape::type_t::uint8_type);
+    unsupported_types.erase(shape::type_t::tuple_type);
     // clang-format off
     return
     {
@@ -61,10 +64,13 @@ std::vector<pass> target::get_passes(migraphx::context& gctx, const compile_opti
         eliminate_identity{},
         eliminate_pad{},
         dead_code_elimination{},
+        insert_pad{},
+        dead_code_elimination{},
         rewrite_batchnorm{},
         dead_code_elimination{},
         rewrite_rnn{},
         dead_code_elimination{},
+        inline_module{},
         rewrite_pooling{},
         dead_code_elimination{},
         eliminate_common_subexpression{},
@@ -92,7 +98,7 @@ std::vector<pass> target::get_passes(migraphx::context& gctx, const compile_opti
         schedule{gpu::schedule_model{ctx.get_current_device().nstreams()}, not enabled(MIGRAPHX_DISABLE_SCHEDULE_PASS{})},
         memory_coloring{"hip::allocate"},
         sync_device{},
-        preallocate_param{"scratch", &ctx},
+        preallocate_param{"scratch", gpu_allocation_model{}},
         dead_code_elimination{},
         eliminate_workspace{},
         eliminate_allocation{"hip::allocate"},

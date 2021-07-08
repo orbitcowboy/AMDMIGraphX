@@ -58,6 +58,7 @@ add_library(migraphx_device
     device/mul.cpp
     device/mul_add.cpp
     device/mul_add_relu.cpp
+    device/nonzero.cpp
     device/pad.cpp
     device/pow.cpp
     device/prelu.cpp
@@ -72,6 +73,7 @@ add_library(migraphx_device
     device/rnn_variable_seq_lens.cpp
     device/round.cpp
     device/rsqrt.cpp
+    device/scatter.cpp
     device/sigmoid.cpp
     device/sign.cpp
     device/sin.cpp
@@ -135,17 +137,18 @@ add_library(migraphx_gpu
     lrn.cpp
     leaky_relu.cpp
     mlir_conv.cpp
+    nonzero.cpp
     pack_args.cpp
     pack_int8_args.cpp
     pad.cpp
     pooling.cpp
-    preallocate_param.cpp
     quant_convolution.cpp
     reverse.cpp
     rnn_variable_seq_lens.cpp
     rocblas.cpp
-    softmax.cpp
+    scatter.cpp
     schedule_model.cpp
+    softmax.cpp
     sync_device.cpp
     target.cpp
     write_literals.cpp
@@ -189,6 +192,7 @@ register_migraphx_gpu_ops(hip_
     max
     min
     mul
+    nonzero
     pad
     pow
     prelu
@@ -202,6 +206,7 @@ register_migraphx_gpu_ops(hip_
     reverse
     round
     rsqrt
+    scatter
     sigmoid
     sign
     sinh
