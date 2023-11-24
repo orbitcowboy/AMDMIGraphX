@@ -1,3 +1,4 @@
 tensorflow==2.5.0
 onnxruntime
 tokenizers
+sympy>=1.12 # not directly required, pinned by Snyk to avoid a vulnerability
